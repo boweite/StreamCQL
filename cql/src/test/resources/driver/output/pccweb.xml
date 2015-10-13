@@ -1,0 +1,38 @@
+<Definitions>
+  <Application id="tt">
+    <Schemas>
+      <Schema id="aiuhotest" name="aiuhotest">
+        <attribute name="sid" type="java.lang.String"/>
+        <attribute name="host" type="java.lang.String"/>
+        <attribute name="fst_uri" type="java.lang.String"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="sid" type="java.lang.String"/>
+        <attribute name="host" type="java.lang.String"/>
+        <attribute name="fst_uri" type="java.lang.String"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <TCPServerInput id="op_001" parallel="2">
+        <deserializer class="PCCWebSerDe"/>
+        <port>9999</port>
+        <fixedLength>966</fixedLength>
+      </TCPServerInput>
+      <ConsoleOutput id="op_002" parallel="2">
+        <serializer class="SimpleSerDe">
+          <separator>,</separator>
+        </serializer>
+        <isPrintCount>true</isPrintCount>
+        <printFrequence>1</printFrequence>
+      </ConsoleOutput>
+      <Functor id="op_004" parallel="2">
+        <outputExpression>aiuhotest.sid, aiuhotest.host, aiuhotest.fst_uri</outputExpression>
+        <filterExpression>(aiuhotest.host = &apos;http://www.huawei.com&apos;)</filterExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="op_001" to="op_004" distributedType="SHUFFLE" schemaName="aiuhotest"/>
+      <Transition name="st_003" from="op_004" to="op_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

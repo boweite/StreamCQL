@@ -1,0 +1,54 @@
+<Definitions>
+  <Application id="app_group_by">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+    </confs>
+    <Schemas>
+      <Schema id="input_group_by" name="input_group_by">
+        <attribute name="o_id" type="java.lang.Integer"/>
+        <attribute name="orderdate" type="java.lang.String"/>
+        <attribute name="orderprice" type="java.lang.Long"/>
+        <attribute name="customer" type="java.lang.String"/>
+      </Schema>
+      <Schema id="output_group_by" name="output_group_by">
+        <attribute name="customer" type="java.lang.String"/>
+        <attribute name="sum_orderprice" type="java.lang.Long"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe">
+          <separator>,</separator>
+        </deserializer>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>group_by_in</topic>
+        <zookeepers>158.1.130.12:2181</zookeepers>
+        <zkSessionTimeout>20000</zkSessionTimeout>
+        <zkSyncTime>20000</zkSyncTime>
+        <messageSerializerClass>kafka.serializer.StringEncoder</messageSerializerClass>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe">
+          <separator>,</separator>
+        </serializer>
+        <topic>group_by_out</topic>
+        <zookeepers>158.1.130.12:2181</zookeepers>
+        <zkSessionTimeout>20000</zkSessionTimeout>
+        <zkSyncTime>20000</zkSyncTime>
+        <messageSerializerClass>kafka.serializer.StringEncoder</messageSerializerClass>
+      </KafkaOutput>
+      <Aggregator id="Aggregator_004" parallel="1">
+        <outputExpression>input_group_by.customer,  sum( input_group_by.orderprice ) </outputExpression>
+        <groupbyExpression>input_group_by.customer</groupbyExpression>
+        <window name="time_batch">
+          <length>10000</length>
+          <excludeNow>false</excludeNow>
+        </window>
+      </Aggregator>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Aggregator_004" distributedType="FIELDS" distributedFields="input_group_by.customer" schemaName="input_group_by"/>
+      <Transition name="st_003" from="Aggregator_004" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="output_group_by"/>
+    </Transitions>
+  </Application>
+</Definitions>

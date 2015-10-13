@@ -1,0 +1,46 @@
+<Definitions>
+  <Application id="having1">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+      <property key="operator.kafka.messageserializerclass" value="kafka.serializer.StringEncoder"/>
+      <property key="operator.kafka.zksessiontimeout" value="20000"/>
+      <property key="operator.kafka.zksynctime" value="20000"/>
+      <property key="operator.kafka.zookeepers" value="localhost:2181,158.1.130.21:2181"/>
+      <property key="serde.simpleserde.separator" value=","/>
+    </confs>
+    <Schemas>
+      <Schema id="s" name="s">
+        <attribute name="id" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="c1" type="java.lang.Integer"/>
+        <attribute name="c2" type="java.lang.Integer"/>
+        <attribute name="c3" type="java.lang.Integer"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>cast_1</topic>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>cast_2</topic>
+      </KafkaOutput>
+      <Aggregator id="Aggregator_004" parallel="1">
+        <outputExpression> count( * ) ,  count( 1 ) ,  count( s.id ) </outputExpression>
+        <groupbyExpression>s.type</groupbyExpression>
+        <window name="length_batch">
+          <length>10</length>
+          <excludeNow>false</excludeNow>
+        </window>
+      </Aggregator>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Aggregator_004" distributedType="FIELDS" distributedFields="s.type" schemaName="s"/>
+      <Transition name="st_003" from="Aggregator_004" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

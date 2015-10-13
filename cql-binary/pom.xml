@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>streamCQL</artifactId>
+        <groupId>com.huawei.streaming</groupId>
+        <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>stream-cql-bianry</artifactId>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <tarLongFileMode>gnu</tarLongFileMode>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>src/main/assemble/binary.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Start make streaming cql package."/>
+                                <echo message="basedir: ${basedir}"/>
+                                <echo message="project.build.finalName: ${project.build.finalName}"/>
+
+                                <property name="package_target" value="${basedir}/target"/>
+                                <property name="streaming_version_path"
+                                          value="${basedir}/target/${project.build.finalName}/${project.build.finalName}"/>
+                                <fixcrlf
+                                        srcdir="${basedir}/target/${project.build.finalName}/${project.build.finalName}/bin"
+                                        includes="**/*" eol="lf" eof="remove"/>
+                                <tar destfile="${basedir}/target/${project.build.finalName}.tar.gz" compression="gzip"
+                                     longfile="gnu">
+                                    <tarfileset
+                                            dir="${basedir}/target/${project.build.finalName}/${project.build.finalName}"
+                                            mode="755" prefix="${project.build.finalName}">
+                                        <include name="bin/**"/>
+                                    </tarfileset>
+                                    <tarfileset
+                                            dir="${basedir}/target/${project.build.finalName}/${project.build.finalName}"
+                                            mode="644" prefix="${project.build.finalName}">
+                                        <exclude name="bin/**"/>
+                                    </tarfileset>
+                                </tar>
+
+                                <delete dir="${basedir}/target/${project.build.finalName}"/>
+
+                                <echo message="Successed to make streaming cql package."/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.huawei.streaming</groupId>
+            <artifactId>stream-storm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.huawei.streaming</groupId>
+            <artifactId>streaming-base</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.yammer.metrics</groupId>
+                    <artifactId>metrics-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.xerial.snappy</groupId>
+                    <artifactId>snappy-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sf.jopt-simple</groupId>
+                    <artifactId>jopt-simple</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.101tec</groupId>
+                    <artifactId>zkclient</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.huawei.streaming</groupId>
+            <artifactId>cql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.storm</groupId>
+            <artifactId>storm-core</artifactId>
+            <version>0.10.0-beta</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.clojure</groupId>
+                    <artifactId>clojure</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-exec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>clj-time</groupId>
+                    <artifactId>clj-time</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>compojure</groupId>
+                    <artifactId>compojure</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>hiccup</groupId>
+                    <artifactId>hiccup</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ring</groupId>
+                    <artifactId>ring-devel</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ring</groupId>
+                    <artifactId>ring-jetty-adapter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.clojure</groupId>
+                    <artifactId>tools.logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.clojure</groupId>
+                    <artifactId>math.numeric-tower</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.twitter</groupId>
+                    <artifactId>carbonite</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.clojure</groupId>
+                    <artifactId>tools.cli</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.googlecode.disruptor</groupId>
+                    <artifactId>disruptor</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jgrapht</groupId>
+                    <artifactId>jgrapht-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jasig.cas.client</groupId>
+                    <artifactId>cas-client-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>opensaml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>hadoop-common</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+</project>

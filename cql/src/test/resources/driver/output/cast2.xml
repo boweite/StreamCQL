@@ -1,0 +1,42 @@
+<Definitions>
+  <Application id="cast2">
+    <Schemas>
+      <Schema id="s1" name="s1">
+        <attribute name="column1" type="java.lang.String"/>
+      </Schema>
+      <Schema id="s2" name="s2">
+        <attribute name="column1" type="java.lang.Boolean"/>
+        <attribute name="column2" type="java.lang.Integer"/>
+        <attribute name="column3" type="java.lang.Long"/>
+        <attribute name="column4" type="java.lang.Float"/>
+        <attribute name="column5" type="java.lang.Double"/>
+        <attribute name="column6" type="java.lang.String"/>
+        <attribute name="column7" type="java.sql.Timestamp"/>
+        <attribute name="column8" type="java.sql.Date"/>
+        <attribute name="column9" type="java.sql.Time"/>
+        <attribute name="column10" type="java.math.BigDecimal"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>zhou123</groupId>
+        <topic>STRV1R2_CQL_EXP_FUNC_006_0001r</topic>
+        <zookeepers>127.0.0.1:2181</zookeepers>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>STRV1R2_CQL_EXP_FUNC_006_0001t</topic>
+        <zookeepers>127.0.0.1:2181</zookeepers>
+        <brokers>127.0.0.1:9092</brokers>
+      </KafkaOutput>
+      <Functor id="Functor_004" parallel="1">
+        <outputExpression> toboolean( s1.column1 ) ,  toint( s1.column1 ) ,  tolong( s1.column1 ) ,  tofloat( s1.column1 ) ,  todouble( s1.column1 ) ,  tostring( s1.column1 ) ,  totimestamp( s1.column1 ) ,  todate( s1.column1 ) ,  totime( s1.column1 ) ,  todecimal( s1.column1 ) </outputExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_004" distributedType="SHUFFLE" schemaName="s1"/>
+      <Transition name="st_003" from="Functor_004" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="s2"/>
+    </Transitions>
+  </Application>
+</Definitions>

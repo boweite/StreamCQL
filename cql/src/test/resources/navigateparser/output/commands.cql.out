@@ -1,0 +1,56 @@
+##sqlstart:
+add file hdfs:///home/user/test.jar
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'hdfs' at line 1:9.
+##sqlstart:
+add file /home/user/test.jar'
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near '/' at line 1:9.
+##sqlstart:
+add file '/home/user/test.jar
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near ''/home/user/test.jar' at line 1:9.
+##sqlstart:
+add jars '/home/user/test.jar'
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'jars' at line 1:4.
+##sqlstart:
+show function tostring
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'function' at line 1:5.
+##sqlstart:
+show extended functions tostring
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'extended' at line 1:5.
+##sqlstart:
+create function test 'com.huawei.streaming.cql.udf.testudf"
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near ''com.huawei.streaming.cql.udf.testudf"' at line 1:21.
+##sqlstart:
+create function  'com.huawei.streaming.cql.udf.testudf'
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near ''com.huawei.streaming.cql.udf.testudf'' at line 1:17.
+##sqlstart:
+drop function exists test
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'exists' at line 1:14.
+##sqlstart:
+drop function if test
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'test' at line 1:17.
+##sqlstart:
+explain application tt kkk
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'kkk' at line 1:23.
+##sqlstart:
+deactive application
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'application' at line 1:20.
+##sqlstart:
+deactive application 'app1'
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near ''app1'' at line 1:21.
+##sqlstart:
+deactive application app1 app2
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'app2' at line 1:26.

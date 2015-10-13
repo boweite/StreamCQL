@@ -1,0 +1,30 @@
+<Definitions>
+  <Application id="simple">
+    <Schemas>
+      <Schema id="s" name="s">
+        <attribute name="num" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="id" type="java.lang.Integer"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>agg_1_1</topic>
+        <zookeepers>158.1.130.21:2181</zookeepers>
+      </KafkaInput>
+      <ConsoleOutput id="ConsoleOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+      </ConsoleOutput>
+      <Functor id="Functor_004" parallel="1">
+        <outputExpression>((((s.num / 1) / s.num) / 2) / s.num)</outputExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_004" distributedType="SHUFFLE" schemaName="s"/>
+      <Transition name="st_003" from="Functor_004" to="ConsoleOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

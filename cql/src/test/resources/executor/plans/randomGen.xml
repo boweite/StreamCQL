@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Definitions>
+    <Application id="randomGen">
+        <Schemas>
+            <Schema id="testSchema1">
+                <attribute name="a" type="java.lang.Integer"/>
+                <attribute name="b" type="java.lang.String"/>
+                <attribute name="c" type="java.lang.String"/>
+            </Schema>
+            <Schema id="testSchema2">
+                <attribute name="a" type="java.lang.Integer"/>
+                <attribute name="b" type="java.lang.String"/>
+                <attribute name="c" type="java.lang.String"/>
+            </Schema>
+        </Schemas>
+        <Operators>
+            <!-- 数据读取算子 -->
+            <RandomGenInput id="randomgen" parallel="2">
+                <deserializer class="SimpleSerDe">
+                    <separator>,</separator>
+                </deserializer>
+                <timeUnit>SECONDS</timeUnit>
+                <period>1</period>
+                <eventNumPerPeriod>1000</eventNumPerPeriod>
+                <isSchedule>true</isSchedule>
+                <totalNumber>0</totalNumber>
+                <delayTime>10</delayTime>
+            </RandomGenInput>
+
+            <!-- 数据过滤算子 -->
+            <Filter id="filter" parallel="1">
+                <outputExpression>
+                    <![CDATA[
+					a,b,c
+					]]>
+                </outputExpression>
+                <filterExpression>
+                    <![CDATA[
+				a>0 and a<100
+				]]>
+                </filterExpression>
+            </Filter>
+
+            <!-- 数据写入算子 -->
+            <KafkaOutput id="kafkawriter" parallel="1">
+                <topic>simpletopic_out</topic>
+                <zookeepers>158.1.130.21:2181</zookeepers>
+                <zkSessionTimeout>20000</zkSessionTimeout>
+                <zkSyncTime>20000</zkSyncTime>
+                <messageSerializerClass>kafka.serializer.StringEncoder
+                </messageSerializerClass>
+                <serializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>|</serde.simpleserde.separator>
+                </serializer>
+            </KafkaOutput>
+        </Operators>
+
+        <Transitions>
+            <Transition name="stream1" from="randomgen" to="filter">
+                <distributedType>SHUFFLE</distributedType>
+                <schemaName>testSchema1</schemaName>
+            </Transition>
+            <Transition name="stream2" from="filter" to="kafkawriter">
+                <distributedType>SHUFFLE</distributedType>
+                <schemaName>testSchema2</schemaName>
+            </Transition>
+        </Transitions>
+    </Application>
+</Definitions>

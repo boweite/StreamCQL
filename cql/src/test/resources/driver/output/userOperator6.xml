@@ -1,0 +1,94 @@
+<Definitions>
+  <Application id="tt">
+    <Schemas>
+      <Schema id="s1" name="s1">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+      </Schema>
+      <Schema id="s2" name="s2">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="cc" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="id" type="java.lang.String"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+        <attribute name="cc" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="s3" name="s3">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="cc" type="java.lang.Long"/>
+      </Schema>
+      <Schema id="s4" name="s4">
+        <attribute name="id" type="java.lang.String"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+        <attribute name="cc" type="java.lang.Integer"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>agg_1_1</topic>
+      </KafkaInput>
+      <KafkaInput id="KafkaInput_002" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_2</groupId>
+        <topic>agg_1_2</topic>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_003" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>agg_2</topic>
+      </KafkaOutput>
+      <Aggregator id="Aggregator_006" parallel="1">
+        <outputExpression>s1.id, s1.name,  count( s1.id ) </outputExpression>
+        <groupbyExpression>s1.id</groupbyExpression>
+        <window name="time_batch">
+          <length>20000</length>
+          <excludeNow>false</excludeNow>
+        </window>
+        <filterBeforeAggregate>(s1.id &gt; 5)</filterBeforeAggregate>
+      </Aggregator>
+      <Functor id="Functor_008" parallel="1">
+        <outputExpression>s2.id, s2.name, s2.cc</outputExpression>
+      </Functor>
+      <FunctionStream id="userop_010" parallel="1">
+        <properties>
+          <property key="client.port" value="8080"/>
+        </properties>
+        <operatorClass>com.huawei.UserOperator</operatorClass>
+        <inputSchema id="s3" name="s3">
+          <attribute name="id" type="java.lang.String"/>
+          <attribute name="name" type="java.lang.String"/>
+          <attribute name="cc" type="java.lang.Integer"/>
+        </inputSchema>
+        <outputSchema id="s4" name="s4">
+          <attribute name="id" type="java.lang.String"/>
+          <attribute name="name" type="java.lang.String"/>
+          <attribute name="type" type="java.lang.Integer"/>
+          <attribute name="cc" type="java.lang.Integer"/>
+        </outputSchema>
+        <distributedColumnName>id</distributedColumnName>
+      </FunctionStream>
+      <Functor id="Functor_013" parallel="1">
+        <outputExpression>s4.id, s4.name, s4.type, s4.cc</outputExpression>
+        <filterExpression>(s4.type = 1)</filterExpression>
+      </Functor>
+      <Union id="Union_014" parallel="1">
+        <outputExpression>s3.id,s3.name,s3.cc</outputExpression>
+      </Union>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Aggregator_006" distributedType="FIELDS" distributedFields="s1.id" schemaName="s1"/>
+      <Transition name="st_006" from="Aggregator_006" to="Union_014" distributedType="SHUFFLE" schemaName="s3"/>
+      <Transition name="st_002" from="KafkaInput_002" to="Functor_008" distributedType="SHUFFLE" schemaName="s2"/>
+      <Transition name="st_008" from="Functor_008" to="Union_014" distributedType="SHUFFLE" schemaName="s3"/>
+      <Transition name="st_003" from="Union_014" to="userop_010" distributedType="FIELDS" distributedFields="id" schemaName="s3"/>
+      <Transition name="st_004" from="userop_010" to="Functor_013" distributedType="SHUFFLE" schemaName="s4"/>
+      <Transition name="st_012" from="Functor_013" to="KafkaOutput_003" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

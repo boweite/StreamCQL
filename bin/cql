@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
+
+export CQL_HOME=${bin}/../
+export CQL_CONF_DIR=${bin}/../conf
+CQL_DEPENDENCY_JAR_PATH=`find ${bin}/.. -name "*-jar-with-dependencies.jar"`
+CQLCLASSPATH="${bin}"/../conf
+LIBPATH="${bin}"/../lib
+CQLCLIENT_OPTS="${CQLCLIENT_OPTS} -Dlogback.configurationFile=${CQL_CONF_DIR}/logback.xml"
+JAVA_OPTS=" "
+
+#The start-up Java Program(main class)
+APP_MAINCLASS="com.huawei.streaming.cql.CQLClient"
+#Parameters
+MAIN_ARGS="$@"
+
+for f in ${LIBPATH}/*.jar; do
+	CQLCLASSPATH=${CQLCLASSPATH}:$f;
+done
+
+$JAVA_HOME/bin/java $JAVA_OPTS $CQLCLIENT_OPTS -Dcql.dependency.jar=${CQL_DEPENDENCY_JAR_PATH} -classpath $CQLCLASSPATH $APP_MAINCLASS $MAIN_ARGS

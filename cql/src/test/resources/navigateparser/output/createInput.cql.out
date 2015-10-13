@@ -1,0 +1,31 @@
+##sqlstart:
+CREATE int STREAM  S (id INT,name STRING)
+SERDE 'com.huawei.streaming.sql.SerDe.CSVSerDe'
+SOURCE 'com.huawei.streaming.spout.csvReader' PROPERTIES ("path" = "/local")
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'int' at line 1:7.
+##sqlstart:
+CREATE INPUT STREAM S (id INT,name STRNIG)
+SERDE 'com.huawei.streaming.sql.SerDe.CSVSerDe'  properties ("ip" = "localhost")
+SOURCE 'com.huawei.streaming.spout.csvReader' PROPERTIES ("path" = "/local")
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'STRNIG' at line 1:35.
+##sqlstart:
+CREATE INPUT STREAM S (id INT,name String) 
+DESER 'com.huawei.streaming.sql.SerDe.CSVSerDe'  pRoperties ("ip" = "localhost")
+SOURCE 'com.huawei.streaming.spout.csvReader' PROPERTIES ("path" = "/local")
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'DESER' at line 2:0.
+##sqlstart:
+CREATE INPUT S (id INT,name String)
+SERDE 'com.huawei.streaming.sql.SerDe.CSVSerDe'
+SOURCE 'com.huawei.streaming.spout.csvReader'
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'S' at line 1:13.
+##sqlstart:
+CREATE INPUT STREAM (id INT comment 'user id',name String comment 'user name')
+COMMENT 'this is stream comment'
+SERDE 'com.huawei.streaming.sql.SerDe.CSVSerDe'
+SOURCE 'com.huawei.streaming.spout.csvReader'
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near '(' at line 1:20.

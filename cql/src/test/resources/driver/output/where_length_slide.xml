@@ -1,0 +1,55 @@
+<Definitions>
+  <Application id="app_where_length_slide">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+    </confs>
+    <Schemas>
+      <Schema id="input_where_length_slide" name="input_where_length_slide">
+        <attribute name="o_id" type="java.lang.Integer"/>
+        <attribute name="orderdate" type="java.lang.String"/>
+        <attribute name="orderprice" type="java.lang.Long"/>
+        <attribute name="customer" type="java.lang.String"/>
+      </Schema>
+      <Schema id="output_where_length_slide" name="output_where_length_slide">
+        <attribute name="sumprice" type="java.lang.Long"/>
+        <attribute name="avgprice" type="java.lang.Long"/>
+        <attribute name="countprice" type="java.lang.Long"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe">
+          <separator>,</separator>
+        </deserializer>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>where_length_slide_in</topic>
+        <zookeepers>158.1.130.12:2181</zookeepers>
+        <zkSessionTimeout>20000</zkSessionTimeout>
+        <zkSyncTime>20000</zkSyncTime>
+        <messageSerializerClass>kafka.serializer.StringEncoder</messageSerializerClass>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe">
+          <separator>,</separator>
+        </serializer>
+        <topic>where_length_slide_out</topic>
+        <zookeepers>158.1.130.12:2181</zookeepers>
+        <zkSessionTimeout>20000</zkSessionTimeout>
+        <zkSyncTime>20000</zkSyncTime>
+        <messageSerializerClass>kafka.serializer.StringEncoder</messageSerializerClass>
+      </KafkaOutput>
+      <Aggregator id="Aggregator_004" parallel="1">
+        <outputExpression> sum( input_where_length_slide.orderprice ) ,  avg( input_where_length_slide.orderprice ) ,  count( input_where_length_slide.orderprice ) </outputExpression>
+        <window name="length_slide">
+          <length>3</length>
+          <excludeNow>false</excludeNow>
+        </window>
+        <filterBeforeAggregate>((input_where_length_slide.orderprice = 100) or (input_where_length_slide.orderprice &gt;= 1000))</filterBeforeAggregate>
+      </Aggregator>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Aggregator_004" distributedType="SHUFFLE" schemaName="input_where_length_slide"/>
+      <Transition name="st_003" from="Aggregator_004" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="output_where_length_slide"/>
+    </Transitions>
+  </Application>
+</Definitions>

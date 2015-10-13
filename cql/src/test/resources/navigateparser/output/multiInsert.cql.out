@@ -1,0 +1,14 @@
+##sqlstart:
+from teststream
+    insert into stream s1 select
+    insert into stream s2 select a
+    insert into stream s3 select id,name  where id > 10
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'insert' at line 3:4.
+##sqlstart:
+from (select * from teststream)
+    insert into stream s1 select *
+    insert into stream s2 select a
+    insert into stream s3 select ,namewhere id > 10
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near ',' at line 4:33.

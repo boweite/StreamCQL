@@ -1,0 +1,78 @@
+<Definitions>
+  <Application id="jointest">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+      <property key="operator.kafka.messageserializerclass" value="kafka.serializer.StringEncoder"/>
+      <property key="operator.kafka.zksessiontimeout" value="20000"/>
+      <property key="operator.kafka.zksynctime" value="20000"/>
+      <property key="operator.kafka.zookeepers" value="158.1.130.12:2181"/>
+      <property key="serde.simpleserde.separator" value=","/>
+    </confs>
+    <Schemas>
+      <Schema id="s1" name="s1">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="s2" name="s2">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+        <attribute name="id2" type="java.lang.Integer"/>
+        <attribute name="name2" type="java.lang.String"/>
+        <attribute name="type2" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="sub_001" name="s1">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>join_1</topic>
+      </KafkaInput>
+      <KafkaInput id="KafkaInput_002" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>join_2</topic>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_003" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>join_3</topic>
+      </KafkaOutput>
+      <Functor id="Functor_006" parallel="1">
+        <outputExpression>s1.id, s1.name, s1.type</outputExpression>
+      </Functor>
+      <Join id="Join_007" parallel="1">
+        <outputExpression>sub_001.id, sub_001.name, sub_001.type, s2.id, s2.name, s2.type</outputExpression>
+        <leftStreamName>st_002</leftStreamName>
+        <rightStreamName>st_003</rightStreamName>
+        <leftWindow name="time_batch">
+          <length>20000</length>
+          <excludeNow>false</excludeNow>
+        </leftWindow>
+        <rightWindow name="keepall">
+          <excludeNow>false</excludeNow>
+        </rightWindow>
+        <joinType>INNER_JOIN</joinType>
+        <joinExpression>(sub_001.id = s2.type)</joinExpression>
+        <filterAfterJoinExpression>(sub_001.id &gt; 5)</filterAfterJoinExpression>
+        <uniDirectionIndex>NONE_STREAM</uniDirectionIndex>
+      </Join>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_006" distributedType="SHUFFLE" schemaName="s1"/>
+      <Transition name="st_002" from="Functor_006" to="Join_007" distributedType="FIELDS" distributedFields="id" schemaName="sub_001"/>
+      <Transition name="st_003" from="KafkaInput_002" to="Join_007" distributedType="FIELDS" distributedFields="type" schemaName="s2"/>
+      <Transition name="st_008" from="Join_007" to="KafkaOutput_003" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

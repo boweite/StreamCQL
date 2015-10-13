@@ -1,0 +1,33 @@
+<Definitions>
+  <Application id="read">
+    <Schemas>
+      <Schema id="s1" name="s1">
+        <attribute name="c1" type="java.lang.String"/>
+        <attribute name="c2" type="java.lang.String"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="c1" type="java.lang.String"/>
+        <attribute name="c2" type="java.lang.String"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>agg_1_1</topic>
+        <zookeepers>160.163.0.164:2181</zookeepers>
+      </KafkaInput>
+      <ConsoleOutput id="ConsoleOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <printFrequence>10</printFrequence>
+      </ConsoleOutput>
+      <Functor id="Functor_004" parallel="1">
+        <outputExpression>s1.c1, s1.c2</outputExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_004" distributedType="SHUFFLE" schemaName="s1"/>
+      <Transition name="st_003" from="Functor_004" to="ConsoleOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

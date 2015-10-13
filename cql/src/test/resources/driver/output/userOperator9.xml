@@ -1,0 +1,46 @@
+<Definitions>
+  <Application id="tt">
+    <Schemas>
+      <Schema id="s" name="s">
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="id" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="newname" type="java.lang.String"/>
+        <attribute name="type1" type="java.lang.Integer"/>
+        <attribute name="type2" type="java.lang.Float"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>agg_1_1</topic>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>agg_2</topic>
+      </KafkaOutput>
+      <FunctionStream id="userop_003" parallel="1">
+        <properties>
+          <property key="client.port" value="8080"/>
+        </properties>
+        <operatorClass>com.huawei.streaming.cql.executor.userdefined.UserOperatorTest</operatorClass>
+        <inputSchema id="s" name="s">
+          <attribute name="name" type="java.lang.String"/>
+          <attribute name="id" type="java.lang.Integer"/>
+          <attribute name="num" type="java.lang.Integer"/>
+        </inputSchema>
+        <outputSchema id="rs" name="rs">
+          <attribute name="newname" type="java.lang.String"/>
+          <attribute name="type1" type="java.lang.Integer"/>
+          <attribute name="type2" type="java.lang.Float"/>
+        </outputSchema>
+      </FunctionStream>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="userop_003" distributedType="SHUFFLE" schemaName="s"/>
+      <Transition name="st_003" from="userop_003" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

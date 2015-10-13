@@ -1,0 +1,43 @@
+<Definitions>
+  <Application id="having1">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+      <property key="operator.kafka.messageserializerclass" value="kafka.serializer.StringEncoder"/>
+      <property key="operator.kafka.zksessiontimeout" value="20000"/>
+      <property key="operator.kafka.zksynctime" value="20000"/>
+      <property key="operator.kafka.zookeepers" value="localhost:2181,158.1.130.21:2181"/>
+      <property key="serde.simpleserde.separator" value=","/>
+    </confs>
+    <Schemas>
+      <Schema id="s" name="s">
+        <attribute name="id" type="java.lang.String"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="idi" type="java.lang.Integer"/>
+        <attribute name="idl" type="java.lang.Long"/>
+        <attribute name="idf" type="java.lang.Float"/>
+        <attribute name="idd" type="java.lang.Double"/>
+        <attribute name="ids" type="java.lang.String"/>
+        <attribute name="idb" type="java.lang.Boolean"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>cast_1</topic>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>cast_2</topic>
+      </KafkaOutput>
+      <Functor id="Functor_004" parallel="1">
+        <outputExpression> toint( s.id ) ,  tolong( s.id ) ,  tofloat( s.id ) ,  todouble( s.id ) ,  tostring( s.id ) ,  toboolean( s.id ) </outputExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_004" distributedType="SHUFFLE" schemaName="s"/>
+      <Transition name="st_003" from="Functor_004" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

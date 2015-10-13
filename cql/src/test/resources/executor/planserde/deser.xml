@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Definitions>
+    <Application id="id01" name="testapp">
+		<confs>
+		  <property key="serde.simpleserde.separator" value=","/>
+		  <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+		</confs>
+        <Schemas>
+            <Schema id="s01">
+                <name>n03</name>
+                <attribute name="c1" type="java.lang.String"/>
+                <attribute name="c2" type="java.lang.Integer"/>
+            </Schema>
+            <Schema unkown="false" name="n02">
+                <attribute name="c3" type="java.lang.String"/>
+                <attribute name="c4" type="java.lang.Integer"/>
+            </Schema>
+            <Schema id="unkown" name="n03">
+                <attribute name="类型" type="java.lang.String"/>
+            </Schema>
+        </Schemas>
+        <Operators>
+            <KafkaInput id="id1" name="name1" parallel="1">
+                <properties>
+                    <property key="zookeeper.port" value="2180"/>
+                    <property key="zookeeper.ip.address" value="localhost"/>
+                </properties>
+                <deserializer class="SimpleSerDe">
+                    <separator>|</separator>
+                </deserializer>
+                <groupId>g1</groupId>
+                <zookeepers>localhost:2181</zookeepers>
+            </KafkaInput>
+            <KafkaInput id="id2" name="name2" parallel="1">
+                <properties>
+                    <property key="zookeeper.port" value="2180"/>
+                    <property key="zookeeper.ip.address" value="localhost"/>
+                </properties>
+                <deserializer class="SimpleSerDe" id="reader2">
+                    <serde.simpleserde.separator>|</serde.simpleserde.separator>
+                </deserializer>
+                <groupId>g1</groupId>
+                <zookeepers>localhost:2181</zookeepers>
+            </KafkaInput>
+            <Filter id="id3" name="name3" parallel="1">
+                <properties>
+                    <property key="filter.optimizer" value="com.huawei.optimizer.filter"/>
+                </properties>
+                <filterExpression>(a&lt;=1) or (a&gt;10) and b is not null and c in
+                    (&apos;1&apos;,&apos;2&apos;,&apos;3&apos;)
+                </filterExpression>
+            </Filter>
+            <Join id="id5" name="name5" parallel="1">
+                <properties>
+                    <property key="join.type" value="hashjoini"/>
+                </properties>
+                <outputExpression>udf(c1),to_String(c4)</outputExpression>
+                <leftStreamName>s3</leftStreamName>
+                <rightStreamName>s4</rightStreamName>
+                <leftWindow name="keepall"/>
+                <rightWindow name="time_slide">
+                    <length>100</length>
+                </rightWindow>
+                <joinType>INNER_JOIN</joinType>
+                <joinExpression>name3.c1 = name4.c1 and name3.c2 = name4.c4+2
+                </joinExpression>
+                <filterAfterJoinExpression>name4.c1&lt;10
+                </filterAfterJoinExpression>
+            </Join>
+            <Filter id="id6" name="name6" parallel="1">
+                <properties>
+                    <property key="filter.before.window" value="true"/>
+                </properties>
+                <filterExpression>c3&lt;=1</filterExpression>
+            </Filter>
+            <TCPOutput id="id7" name="name7" parallel="1">
+                <properties>
+                    <property key="split" value="|"/>
+                </properties>
+                <serializer class="SimpleSerDe" id="writer">
+                    <serde.simpleserde.separator>,</serde.simpleserde.separator>
+                </serializer>
+                <server>localhost</server>
+                <port>10000</port>
+            </TCPOutput>
+        </Operators>       
+        <Transitions>
+            <Transition id="s1" streamName="s1" from="id1" to="id3">
+                <distributedType>SHUFFLE</distributedType>
+                <schemaName>s01</schemaName>
+            </Transition>
+            <Transition id="s2" streamName="s2" from="id2" to="id5">
+                <distributedType>FIELDS</distributedType>
+                <distributedFields>id,name</distributedFields>
+                <schemaName>s02</schemaName>
+            </Transition>
+            <Transition id="s3" streamName="s3" from="id3" to="id5">
+                <distributedType>FIELDS</distributedType>
+                <distributedFields>id,name</distributedFields>
+                <schemaName>s01</schemaName>
+            </Transition>
+            <Transition id="s4" streamName="s4" from="id5" to="id6">
+                <distributedType>SHUFFLE</distributedType>
+                <schemaName>s01</schemaName>
+            </Transition>
+            <Transition id="s5" streamName="s5" from="id6" to="id7">
+                <distributedType>SHUFFLE</distributedType>
+                <schemaName>s01</schemaName>
+            </Transition>
+        </Transitions>
+    </Application>
+</Definitions>

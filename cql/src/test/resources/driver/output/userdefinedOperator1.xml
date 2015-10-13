@@ -1,0 +1,46 @@
+<Definitions>
+  <Application id="simple">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+      <property key="serde.simpleserde.separator" value=","/>
+    </confs>
+    <Schemas>
+      <Schema id="s" name="s">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <InputOperator id="Input_001" parallel="1">
+        <properties>
+          <property key="fixlength" value="966"/>
+          <property key="port" value="7999"/>
+        </properties>
+        <deserializerClass>com.huawei.streaming.serde.SimpleSerDe</deserializerClass>
+        <recordReader>com.huawei.streaming.cql.executor.userdefined.WebSpout</recordReader>
+      </InputOperator>
+      <OutputOperator id="Output_002" parallel="1">
+        <properties/>
+        <serializerClass>com.huawei.streaming.serde.SimpleSerDe</serializerClass>
+        <recordWriter>com.huawei.streaming.cql.executor.userdefined.WebFilterStream</recordWriter>
+      </OutputOperator>
+      <Aggregator id="Aggregator_004" parallel="1">
+        <outputExpression>s.id, s.name</outputExpression>
+        <window name="time_batch">
+          <length>200</length>
+          <excludeNow>false</excludeNow>
+        </window>
+        <filterBeforeAggregate>(s.id &gt; 5)</filterBeforeAggregate>
+      </Aggregator>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="Input_001" to="Aggregator_004" distributedType="SHUFFLE" schemaName="s"/>
+      <Transition name="st_003" from="Aggregator_004" to="Output_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

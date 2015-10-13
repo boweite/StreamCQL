@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Definitions>
+  <Application id="Application" name="Application">
+    <Schemas>
+      <Schema id="schemaName" name="schemaName">
+        <attribute name="w" type="String"></attribute>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <Aggregate id="aggregate1" name="Aggregate1" parallel="1">
+        <window name="time_sort">
+          <length>0</length>
+          <groupbyExpression></groupbyExpression>
+          <orderbyExpression>s</orderbyExpression>
+        </window>
+        <groupbyExpression>sdfs</groupbyExpression>
+        <orderBy>sdfsdf</orderBy>
+        <filterBeforeAggregate>eer</filterBeforeAggregate>
+        <filterAfterAggregate>dd</filterAfterAggregate>
+        <limit>2</limit>
+        <outputExpression>sdfsdf</outputExpression>
+      </Aggregate>
+      <Join id="join1" name="Join1" parallel="1">
+        <leftWindow name="length_slide">
+          <length>0</length>
+        </leftWindow>
+        <rightWindow name="time_slide">
+          <length>0</length>
+        </rightWindow>
+        <leftStreamName>stream2</leftStreamName>
+        <rightStreamName>stream1</rightStreamName>
+        <joinType>INNER_JOIN</joinType>
+        <joinExpression>dfsd</joinExpression>
+        <filterAfterJoinExpression>dsfsd</filterAfterJoinExpression>
+        <outputExpression>sdfsdf</outputExpression>
+      </Join>
+      <Filter id="filter1" name="Filter1" parallel="1">
+        <filterExpression></filterExpression>
+        <outputExpression>gfg</outputExpression>
+      </Filter>
+      <Functor id="functor1" name="Functor1" parallel="1">
+        <filterExpression>gggg</filterExpression>
+        <outputExpression>fgdgdf</outputExpression>
+      </Functor>
+      <RandomSource id="randominput1" name="Random Input1" parallel="2">
+        <timeUnit>MILLISECONDS</timeUnit>
+        <period>4</period>
+        <eventNumPerPeriod>3</eventNumPerPeriod>
+        <isSchedule>true</isSchedule>
+        <totalNumber>6</totalNumber>
+        <delayTime>5</delayTime>
+        <deserializer class="SimpleSerDe">
+          <separator>~</separator>
+        </deserializer>
+      </RandomSource>
+      <KafkaReader id="kafkainput1" name="Kafka Input1" parallel="1">
+        <groupId>3</groupId>
+        <topic>rwer</topic>
+        <zookeepers>dfdf</zookeepers>
+        <zkSessionTimeout>234</zkSessionTimeout>
+        <zkSyncTime>234234</zkSyncTime>
+        <kafkaSerializerClass>werwer</kafkaSerializerClass>
+        <deserializer class="SimpleSerDe">
+          <separator>!</separator>
+        </deserializer>
+      </KafkaReader>
+      <KafkaWriter id="kafkaoutput1" name="Kafka Output1" parallel="1">
+        <topic>23423</topic>
+        <zookeepers>ssss</zookeepers>
+        <zkSessionTimeout>43</zkSessionTimeout>
+        <zkSyncTime>234234</zkSyncTime>
+        <kafkaSerializerClass>2342</kafkaSerializerClass>
+        <serializer class="NullSerializer"></serializer>
+      </KafkaWriter>
+      <Sort id="sort2" name="Sort2" parallel="1">
+        <window name="group_time_batch">
+          <length>0</length>
+          <groupbyExpression>gdfgdfgd</groupbyExpression>
+          <orderbyExpression></orderbyExpression>
+        </window>
+        <orderBy></orderBy>
+        <limit>0</limit>
+        <outputExpression></outputExpression>
+      </Sort>
+    </Operators>
+    <Transitions>
+      <Transition id="transition3" name="stream1" from="aggregate1" to="join1">
+        <schemaName>schemaName</schemaName>
+        <distributedType>FIELDS</distributedType>
+        <distributedFields>fddf</distributedFields>
+      </Transition>
+      <Transition id="transition4" name="stream1" from="aggregate1" to="filter1">
+        <schemaName>schemaName</schemaName>
+        <distributedType>SHUFFLE</distributedType>
+        <distributedFields></distributedFields>
+      </Transition>
+      <Transition id="transition6" name="stream6" from="kafkainput1" to="kafkaoutput1">
+        <schemaName></schemaName>
+        <distributedType>SHUFFLE</distributedType>
+        <distributedFields></distributedFields>
+      </Transition>
+      <Transition id="transition7" name="stream7" from="tcpinput1" to="tcpoutput1">
+        <schemaName></schemaName>
+        <distributedType>SHUFFLE</distributedType>
+        <distributedFields></distributedFields>
+      </Transition>
+    </Transitions>
+  </Application>
+  <Diagram id="Diagram_Application">
+    <STREAMShape STREAMElement="aggregate1" id="STREAMShape_aggregate1">
+      <bounds height="50" width="100" x="600" y="300"></bounds>
+    </STREAMShape>
+    <STREAMShape STREAMElement="join1" id="STREAMShape_join1">
+      <bounds height="50" width="100" x="351" y="300"></bounds>
+    </STREAMShape>
+    <STREAMShape STREAMElement="filter1" id="STREAMShape_filter1">
+      <bounds height="50" width="100" x="570" y="90"></bounds>
+    </STREAMShape>
+    <STREAMShape STREAMElement="functor1" id="STREAMShape_functor1">
+      <bounds height="50" width="100" x="280" y="120"></bounds>
+    </STREAMShape>
+    <STREAMShape STREAMElement="randominput1" id="STREAMShape_randominput1">
+      <bounds height="50" width="100" x="190" y="60"></bounds>
+    </STREAMShape>
+    <STREAMShape STREAMElement="kafkainput1" id="STREAMShape_kafkainput1">
+      <bounds height="50" width="100" x="810" y="40"></bounds>
+    </STREAMShape>
+    <STREAMShape STREAMElement="kafkaoutput1" id="STREAMShape_kafkaoutput1">
+      <bounds height="50" width="100" x="850" y="180"></bounds>
+    </STREAMShape>
+    <STREAMShape STREAMElement="sort2" id="STREAMShape_sort2">
+      <bounds height="50" width="100" x="150" y="300"></bounds>
+    </STREAMShape>
+    <STREAMShape STREAMElement="tcpinput1" id="STREAMShape_tcpinput1">
+      <bounds height="50" width="100" x="711" y="148"></bounds>
+    </STREAMShape>
+    <STREAMShape STREAMElement="tcpoutput1" id="STREAMShape_tcpoutput1">
+      <bounds height="50" width="100" x="860" y="290"></bounds>
+    </STREAMShape>
+    <STREAMEdge STREAMElement="transition2" id="STREAMEdge_transition2"></STREAMEdge>
+    <STREAMEdge STREAMElement="transition3" id="STREAMEdge_transition3"></STREAMEdge>
+    <STREAMEdge STREAMElement="transition4" id="STREAMEdge_transition4"></STREAMEdge>
+    <STREAMEdge STREAMElement="transition6" id="STREAMEdge_transition6"></STREAMEdge>
+    <STREAMEdge STREAMElement="transition7" id="STREAMEdge_transition7"></STREAMEdge>
+  </Diagram>
+</Definitions>

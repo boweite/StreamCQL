@@ -1,0 +1,197 @@
+<Definitions>
+  <Application id="aiuho">
+    <confs>
+      <property key="streaming.storm.submit.islocal" value="true"/>
+    </confs>
+    <Schemas>
+      <Schema id="aiuhotest" name="aiuhotest">
+        <attribute name="tdrid" type="java.lang.String"/>
+        <attribute name="sysid" type="java.lang.Integer"/>
+        <attribute name="orgcdrid" type="java.lang.String"/>
+        <attribute name="abiscdrid" type="java.lang.String"/>
+        <attribute name="acdrid" type="java.lang.String"/>
+        <attribute name="horefid" type="java.lang.Long"/>
+        <attribute name="zoneid" type="java.lang.Integer"/>
+        <attribute name="poolid" type="java.lang.Integer"/>
+        <attribute name="sccpid" type="java.lang.String"/>
+        <attribute name="starttime" type="java.lang.Integer"/>
+        <attribute name="millisec" type="java.lang.Integer"/>
+        <attribute name="abis" type="java.lang.Integer"/>
+        <attribute name="srvstat" type="java.lang.Integer"/>
+        <attribute name="cdrstat" type="java.lang.Integer"/>
+        <attribute name="ho_type" type="java.lang.Integer"/>
+        <attribute name="inter_type" type="java.lang.Integer"/>
+        <attribute name="ni" type="java.lang.Integer"/>
+        <attribute name="opc" type="java.lang.Integer"/>
+        <attribute name="dpc" type="java.lang.Integer"/>
+        <attribute name="linktype" type="java.lang.Integer"/>
+        <attribute name="access_type" type="java.lang.Integer"/>
+        <attribute name="imsi" type="java.lang.String"/>
+        <attribute name="tmsi" type="java.lang.String"/>
+        <attribute name="msisdn" type="java.lang.String"/>
+        <attribute name="imei" type="java.lang.String"/>
+        <attribute name="mcc" type="java.lang.String"/>
+        <attribute name="mnc" type="java.lang.String"/>
+        <attribute name="orglac" type="java.lang.String"/>
+        <attribute name="orgci" type="java.lang.String"/>
+        <attribute name="tmnc" type="java.lang.String"/>
+        <attribute name="targetlac" type="java.lang.String"/>
+        <attribute name="targetci" type="java.lang.String"/>
+        <attribute name="lastlac" type="java.lang.String"/>
+        <attribute name="lastci" type="java.lang.String"/>
+        <attribute name="orgrncid" type="java.lang.String"/>
+        <attribute name="tarrncid" type="java.lang.String"/>
+        <attribute name="horefnum" type="java.lang.Integer"/>
+        <attribute name="codec" type="java.lang.Integer"/>
+        <attribute name="ipaddr" type="java.lang.Long"/>
+        <attribute name="port" type="java.lang.Integer"/>
+        <attribute name="hold" type="java.lang.Integer"/>
+        <attribute name="ho_cause" type="java.lang.Integer"/>
+        <attribute name="firsttei" type="java.lang.Integer"/>
+        <attribute name="firstchannel" type="java.lang.Integer"/>
+        <attribute name="sumrxlevlul" type="java.lang.Long"/>
+        <attribute name="sumrxlevldl" type="java.lang.Long"/>
+        <attribute name="sumrxqualul" type="java.lang.Long"/>
+        <attribute name="sumrxqualdl" type="java.lang.Long"/>
+        <attribute name="sumbspwr" type="java.lang.Long"/>
+        <attribute name="summspwr" type="java.lang.Long"/>
+        <attribute name="sumta" type="java.lang.Long"/>
+        <attribute name="totalmrno" type="java.lang.Integer"/>
+        <attribute name="totalmrcount" type="java.lang.Integer"/>
+        <attribute name="totalfullratemrno" type="java.lang.Integer"/>
+        <attribute name="totalhalfratemrno" type="java.lang.Integer"/>
+        <attribute name="sumrxquaul0" type="java.lang.Integer"/>
+        <attribute name="sumrxquaul1" type="java.lang.Integer"/>
+        <attribute name="sumrxquaul2" type="java.lang.Integer"/>
+        <attribute name="sumrxquaul3" type="java.lang.Integer"/>
+        <attribute name="sumrxquaul4" type="java.lang.Integer"/>
+        <attribute name="sumrxquaul5" type="java.lang.Integer"/>
+        <attribute name="sumrxquaul6" type="java.lang.Integer"/>
+        <attribute name="sumrxquaul7" type="java.lang.Integer"/>
+        <attribute name="sumrxquadl0" type="java.lang.Integer"/>
+        <attribute name="sumrxquadl1" type="java.lang.Integer"/>
+        <attribute name="sumrxquadl2" type="java.lang.Integer"/>
+        <attribute name="sumrxquadl3" type="java.lang.Integer"/>
+        <attribute name="sumrxquadl4" type="java.lang.Integer"/>
+        <attribute name="sumrxquadl5" type="java.lang.Integer"/>
+        <attribute name="sumrxquadl6" type="java.lang.Integer"/>
+        <attribute name="sumrxquadl7" type="java.lang.Integer"/>
+        <attribute name="ta01count" type="java.lang.Integer"/>
+        <attribute name="rxlevel_down" type="java.lang.Integer"/>
+        <attribute name="weak_coverage" type="java.lang.Integer"/>
+        <attribute name="over_coverage" type="java.lang.Integer"/>
+        <attribute name="imbalance" type="java.lang.Integer"/>
+        <attribute name="interference" type="java.lang.Integer"/>
+        <attribute name="ho_required_time" type="java.lang.Integer"/>
+        <attribute name="ho_request_time" type="java.lang.Integer"/>
+        <attribute name="ho_ack_time" type="java.lang.Integer"/>
+        <attribute name="ho_cmd_time" type="java.lang.Integer"/>
+        <attribute name="ho_detect_time" type="java.lang.Integer"/>
+        <attribute name="ho_compt_time" type="java.lang.Integer"/>
+        <attribute name="assn_time" type="java.lang.Integer"/>
+        <attribute name="assn_cmpt_time" type="java.lang.Integer"/>
+        <attribute name="alert_time" type="java.lang.Integer"/>
+        <attribute name="answer_time" type="java.lang.Integer"/>
+        <attribute name="direction" type="java.lang.Integer"/>
+        <attribute name="hochartype" type="java.lang.Integer"/>
+        <attribute name="ho_in_fail_time" type="java.lang.Integer"/>
+        <attribute name="ho_out_fail_time" type="java.lang.Integer"/>
+        <attribute name="ho_out_reject_time" type="java.lang.Integer"/>
+        <attribute name="clear_req_time" type="java.lang.Integer"/>
+        <attribute name="end_time" type="java.lang.Integer"/>
+        <attribute name="pd" type="java.lang.Integer"/>
+        <attribute name="firfailmsg" type="java.lang.Integer"/>
+        <attribute name="cause" type="java.lang.Integer"/>
+        <attribute name="encrypt_version" type="java.lang.Integer"/>
+        <attribute name="reserved1" type="java.lang.String"/>
+        <attribute name="reserved2" type="java.lang.String"/>
+        <attribute name="reserved3" type="java.lang.String"/>
+        <attribute name="reserved4" type="java.lang.Long"/>
+        <attribute name="reserved5" type="java.lang.Integer"/>
+        <attribute name="reserved6" type="java.lang.Integer"/>
+        <attribute name="reserved7" type="java.lang.Integer"/>
+        <attribute name="reserved8" type="java.lang.Integer"/>
+        <attribute name="filelocation" type="java.lang.String"/>
+        <attribute name="offset" type="java.lang.Integer"/>
+        <attribute name="homemcc" type="java.lang.String"/>
+        <attribute name="homemnc" type="java.lang.String"/>
+        <attribute name="homeproid" type="java.lang.Integer"/>
+        <attribute name="homeareaid" type="java.lang.Integer"/>
+        <attribute name="probeid" type="java.lang.Integer"/>
+        <attribute name="probeid2" type="java.lang.Integer"/>
+        <attribute name="groupid" type="java.lang.Integer"/>
+        <attribute name="lnkopc" type="java.lang.Integer"/>
+        <attribute name="lnkdpc" type="java.lang.Integer"/>
+        <attribute name="lnksrcip" type="java.lang.Long"/>
+        <attribute name="lnksrcport" type="java.lang.Integer"/>
+        <attribute name="lnkdestip" type="java.lang.Long"/>
+        <attribute name="lnkdestport" type="java.lang.Integer"/>
+        <attribute name="setup_time" type="java.lang.Integer"/>
+        <attribute name="aiufirstxdrtype" type="java.lang.Integer"/>
+        <attribute name="afirstxdrid" type="java.lang.String"/>
+        <attribute name="mschotype" type="java.lang.Integer"/>
+        <attribute name="hocallstate" type="java.lang.Integer"/>
+        <attribute name="callsrvtype" type="java.lang.Integer"/>
+        <attribute name="hointype" type="java.lang.Integer"/>
+        <attribute name="initialmsc" type="java.lang.Integer"/>
+        <attribute name="initialbsc" type="java.lang.Integer"/>
+        <attribute name="initialmcc" type="java.lang.String"/>
+        <attribute name="initialmnc" type="java.lang.String"/>
+        <attribute name="initiallac" type="java.lang.String"/>
+        <attribute name="initialci" type="java.lang.String"/>
+        <attribute name="initialpoolid" type="java.lang.Integer"/>
+        <attribute name="initialaccess_type" type="java.lang.Integer"/>
+        <attribute name="hosourcemsc" type="java.lang.Integer"/>
+        <attribute name="hosourceni" type="java.lang.Integer"/>
+        <attribute name="hosourcepoolid" type="java.lang.Integer"/>
+        <attribute name="hotargetmsc" type="java.lang.Integer"/>
+        <attribute name="hotargetni" type="java.lang.Integer"/>
+        <attribute name="hotargetpoolid" type="java.lang.Integer"/>
+        <attribute name="callduration" type="java.lang.Integer"/>
+        <attribute name="firfailtime" type="java.lang.Integer"/>
+        <attribute name="layer1id" type="java.lang.Integer"/>
+        <attribute name="layer2id" type="java.lang.Integer"/>
+        <attribute name="layer3id" type="java.lang.Integer"/>
+        <attribute name="layer4id" type="java.lang.Integer"/>
+        <attribute name="layer5id" type="java.lang.Integer"/>
+        <attribute name="layer6id" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="imsi" type="java.lang.String"/>
+        <attribute name="cnt" type="java.lang.Long"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <TCPServerInput id="op_001" parallel="1">
+        <deserializer class="AIUHOSerDe"/>
+        <port>9999</port>
+        <fixedLength>883</fixedLength>
+      </TCPServerInput>
+      <ConsoleOutput id="op_002" parallel="1">
+        <serializer class="SimpleSerDe">
+          <separator>,</separator>
+        </serializer>
+        <isPrintCount>true</isPrintCount>
+        <printFrequence>1</printFrequence>
+      </ConsoleOutput>
+      <Filter id="op_003" parallel="1">
+        <outputExpression>aiuhotest.tdrid,aiuhotest.sysid,aiuhotest.orgcdrid,aiuhotest.abiscdrid,aiuhotest.acdrid,aiuhotest.horefid,aiuhotest.zoneid,aiuhotest.poolid,aiuhotest.sccpid,aiuhotest.starttime,aiuhotest.millisec,aiuhotest.abis,aiuhotest.srvstat,aiuhotest.cdrstat,aiuhotest.ho_type,aiuhotest.inter_type,aiuhotest.ni,aiuhotest.opc,aiuhotest.dpc,aiuhotest.linktype,aiuhotest.access_type,aiuhotest.imsi,aiuhotest.tmsi,aiuhotest.msisdn,aiuhotest.imei,aiuhotest.mcc,aiuhotest.mnc,aiuhotest.orglac,aiuhotest.orgci,aiuhotest.tmnc,aiuhotest.targetlac,aiuhotest.targetci,aiuhotest.lastlac,aiuhotest.lastci,aiuhotest.orgrncid,aiuhotest.tarrncid,aiuhotest.horefnum,aiuhotest.codec,aiuhotest.ipaddr,aiuhotest.port,aiuhotest.hold,aiuhotest.ho_cause,aiuhotest.firsttei,aiuhotest.firstchannel,aiuhotest.sumrxlevlul,aiuhotest.sumrxlevldl,aiuhotest.sumrxqualul,aiuhotest.sumrxqualdl,aiuhotest.sumbspwr,aiuhotest.summspwr,aiuhotest.sumta,aiuhotest.totalmrno,aiuhotest.totalmrcount,aiuhotest.totalfullratemrno,aiuhotest.totalhalfratemrno,aiuhotest.sumrxquaul0,aiuhotest.sumrxquaul1,aiuhotest.sumrxquaul2,aiuhotest.sumrxquaul3,aiuhotest.sumrxquaul4,aiuhotest.sumrxquaul5,aiuhotest.sumrxquaul6,aiuhotest.sumrxquaul7,aiuhotest.sumrxquadl0,aiuhotest.sumrxquadl1,aiuhotest.sumrxquadl2,aiuhotest.sumrxquadl3,aiuhotest.sumrxquadl4,aiuhotest.sumrxquadl5,aiuhotest.sumrxquadl6,aiuhotest.sumrxquadl7,aiuhotest.ta01count,aiuhotest.rxlevel_down,aiuhotest.weak_coverage,aiuhotest.over_coverage,aiuhotest.imbalance,aiuhotest.interference,aiuhotest.ho_required_time,aiuhotest.ho_request_time,aiuhotest.ho_ack_time,aiuhotest.ho_cmd_time,aiuhotest.ho_detect_time,aiuhotest.ho_compt_time,aiuhotest.assn_time,aiuhotest.assn_cmpt_time,aiuhotest.alert_time,aiuhotest.answer_time,aiuhotest.direction,aiuhotest.hochartype,aiuhotest.ho_in_fail_time,aiuhotest.ho_out_fail_time,aiuhotest.ho_out_reject_time,aiuhotest.clear_req_time,aiuhotest.end_time,aiuhotest.pd,aiuhotest.firfailmsg,aiuhotest.cause,aiuhotest.encrypt_version,aiuhotest.reserved1,aiuhotest.reserved2,aiuhotest.reserved3,aiuhotest.reserved4,aiuhotest.reserved5,aiuhotest.reserved6,aiuhotest.reserved7,aiuhotest.reserved8,aiuhotest.filelocation,aiuhotest.offset,aiuhotest.homemcc,aiuhotest.homemnc,aiuhotest.homeproid,aiuhotest.homeareaid,aiuhotest.probeid,aiuhotest.probeid2,aiuhotest.groupid,aiuhotest.lnkopc,aiuhotest.lnkdpc,aiuhotest.lnksrcip,aiuhotest.lnksrcport,aiuhotest.lnkdestip,aiuhotest.lnkdestport,aiuhotest.setup_time,aiuhotest.aiufirstxdrtype,aiuhotest.afirstxdrid,aiuhotest.mschotype,aiuhotest.hocallstate,aiuhotest.callsrvtype,aiuhotest.hointype,aiuhotest.initialmsc,aiuhotest.initialbsc,aiuhotest.initialmcc,aiuhotest.initialmnc,aiuhotest.initiallac,aiuhotest.initialci,aiuhotest.initialpoolid,aiuhotest.initialaccess_type,aiuhotest.hosourcemsc,aiuhotest.hosourceni,aiuhotest.hosourcepoolid,aiuhotest.hotargetmsc,aiuhotest.hotargetni,aiuhotest.hotargetpoolid,aiuhotest.callduration,aiuhotest.firfailtime,aiuhotest.layer1id,aiuhotest.layer2id,aiuhotest.layer3id,aiuhotest.layer4id,aiuhotest.layer5id,aiuhotest.layer6id</outputExpression>
+        <filterExpression>((aiuhotest.srvstat = 1) and  aiuhotest.cause in ( 0,1,2 ) )</filterExpression>
+      </Filter>
+      <Aggregate id="op_004" parallel="1">
+        <outputExpression>aiuhotest.imsi,  count( * ) </outputExpression>
+        <filterAfterAggregate>(rs.cnt &gt;= 20)</filterAfterAggregate>
+        <groupbyExpression>aiuhotest.imsi</groupbyExpression>
+        <window name="time_slide">
+          <length>900000</length>
+          <excludeNow>false</excludeNow>
+        </window>
+      </Aggregate>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="op_003" to="op_004" distributedType="FIELDS" distributedFields="aiuhotest.imsi" schemaName="aiuhotest"/>
+      <Transition name="st_002" from="op_001" to="op_003" distributedType="SHUFFLE" schemaName="aiuhotest"/>
+      <Transition name="st_003" from="op_004" to="op_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

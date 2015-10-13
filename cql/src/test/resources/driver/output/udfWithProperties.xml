@@ -1,0 +1,56 @@
+<Definitions>
+  <Application id="udfWithProperties">
+    <UDFs>
+      <UserFunction>
+        <name>udf2</name>
+        <clazz>com.huawei.streaming.cql.functions.DirectOutputUDF</clazz>
+        <properties>
+          <property key="cql.test.direct.output" value="b"/>
+        </properties>
+      </UserFunction>
+      <UserFunction>
+        <name>udf1</name>
+        <clazz>com.huawei.streaming.cql.functions.DirectOutputUDF</clazz>
+        <properties>
+          <property key="cql.test.direct.output" value="a"/>
+        </properties>
+      </UserFunction>
+      <UserFunction>
+        <name>udf3</name>
+        <clazz>com.huawei.streaming.cql.functions.DirectOutputUDF</clazz>
+        <properties/>
+      </UserFunction>
+    </UDFs>
+    <Schemas>
+      <Schema id="hispace" name="hispace">
+        <attribute name="id" type="java.lang.String"/>
+      </Schema>
+      <Schema id="open_count" name="open_count">
+        <attribute name="value1" type="java.lang.String"/>
+        <attribute name="value2" type="java.lang.String"/>
+        <attribute name="defaultvalue" type="java.lang.String"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe">
+          <separator>|</separator>
+        </deserializer>
+        <groupId>udf</groupId>
+        <topic>udf</topic>
+        <zookeepers>127.0.0.1:2181</zookeepers>
+      </KafkaInput>
+      <ConsoleOutput id="ConsoleOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <printFrequence>1</printFrequence>
+      </ConsoleOutput>
+      <Functor id="Functor_004" parallel="1">
+        <outputExpression> udf1(  ) ,  udf2(  ) ,  udf3(  ) </outputExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_004" distributedType="SHUFFLE" schemaName="hispace"/>
+      <Transition name="st_003" from="Functor_004" to="ConsoleOutput_002" distributedType="SHUFFLE" schemaName="open_count"/>
+    </Transitions>
+  </Application>
+</Definitions>

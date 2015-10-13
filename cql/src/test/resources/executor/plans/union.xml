@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Definitions>
+    <Application id="union">
+        <Schemas>
+            <Schema id="testSchema1">
+                <attribute name="a" type="java.lang.Integer"/>
+                <attribute name="b" type="java.lang.String"/>
+                <attribute name="c" type="java.lang.String"/>
+            </Schema>
+            <Schema id="testSchema2">
+                <attribute name="a" type="java.lang.Integer"/>
+                <attribute name="b" type="java.lang.String"/>
+                <attribute name="c" type="java.lang.String"/>
+            </Schema>
+        </Schemas>
+        <Operators>
+            <KafkaInput id="kafkaReader_left" parallel="1">
+                <deserializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>,</serde.simpleserde.separator>
+                </deserializer>
+                <groupId>operator.kafka.groupid</groupId>
+                <topic>innerjoin6_left_in</topic>
+                <zookeepers>158.1.130.21:2181</zookeepers>
+                <zkSessionTimeout>20000</zkSessionTimeout>
+                <zkSyncTime>20000</zkSyncTime>
+            </KafkaInput>
+            <KafkaInput id="kafkaReader_right" parallel="1">
+                <deserializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>,</serde.simpleserde.separator>
+                </deserializer>
+                <groupId>operator.kafka.groupid</groupId>
+                <topic>innerjoin6_right_in</topic>
+                <zookeepers>158.1.130.21:2181</zookeepers>
+                <zkSessionTimeout>20000</zkSessionTimeout>
+                <zkSyncTime>20000</zkSyncTime>
+            </KafkaInput>
+            <Union id="union" parallel="1"/>
+
+            <!-- 数据写入算子 -->
+            <KafkaOutput id="kafkawriter" parallel="1">
+                <topic>simpletopic_out</topic>
+                <zookeepers>158.1.130.21:2181</zookeepers>
+                <zkSessionTimeout>20000</zkSessionTimeout>
+                <zkSyncTime>20000</zkSyncTime>
+                <messageSerializerClass>kafka.serializer.StringEncoder
+                </messageSerializerClass>
+                <serializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>|</serde.simpleserde.separator>
+                </serializer>
+            </KafkaOutput>
+        </Operators>
+
+        <Transitions>
+            <Transition name="stream1" from="kafkaReader_left" to="union">
+                <distributedType>SHUFFLE</distributedType>
+                <schemaName>testSchema1</schemaName>
+            </Transition>
+            <Transition name="stream2" from="kafkaReader_right" to="union">
+                <distributedType>SHUFFLE</distributedType>
+                <schemaName>testSchema1</schemaName>
+            </Transition>
+            <Transition name="stream3" from="union" to="kafkawriter">
+                <distributedType>SHUFFLE</distributedType>
+                <schemaName>testSchema2</schemaName>
+            </Transition>
+        </Transitions>
+    </Application>
+</Definitions>

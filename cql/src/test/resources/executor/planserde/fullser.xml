@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Definitions>
+    <Application id="fullapptest">
+        <Schemas>
+            <Schema id="testschema1">
+                <attribute name="a" type="java.lang.Integer"/>
+                <attribute name="b" type="java.lang.Integer"/>
+                <attribute name="c" type="java.lang.String"/>
+            </Schema>
+            <Schema id="testschema2">
+                <attribute name="a" type="java.lang.Integer"/>
+                <attribute name="b" type="java.lang.Integer"/>
+                <attribute name="c" type="java.lang.String"/>
+            </Schema>
+        </Schemas>
+        <Operators>
+            <KafkaInput id="kafkaReader_left" parallel="1">
+                <deserializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>,</serde.simpleserde.separator>
+                </deserializer>
+                <groupId>operator.kafka.groupid</groupId>
+                <topic>innerjoin6_left_in</topic>
+                <zookeepers>158.1.130.21:2181</zookeepers>
+                <zkSessionTimeout>20000</zkSessionTimeout>
+                <zkSyncTime>20000</zkSyncTime>
+            </KafkaInput>
+            <KafkaInput id="kafkaReader_right" parallel="1">
+                <deserializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>,</serde.simpleserde.separator>
+                </deserializer>
+                <groupId>operator.kafka.groupid</groupId>
+                <topic>innerjoin6_right_in</topic>
+                <zookeepers>158.1.130.21:2181</zookeepers>
+                <zkSessionTimeout>20000</zkSessionTimeout>
+                <zkSyncTime>20000</zkSyncTime>
+            </KafkaInput>
+            <KafkaInput id="kafkaReader_union" parallel="1">
+                <deserializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>,</serde.simpleserde.separator>
+                </deserializer>
+                <groupId>operator.kafka.groupid</groupId>
+                <topic>innerjoin6_right_in</topic>
+                <zookeepers>158.1.130.21:2181</zookeepers>
+                <zkSessionTimeout>20000</zkSessionTimeout>
+                <zkSyncTime>20000</zkSyncTime>
+            </KafkaInput>
+            <Join id="join" parallel="1">
+                <outputExpression>s1.a,s2.b,s2.c</outputExpression>
+                <leftStreamName>s1</leftStreamName>
+                <rightStreamName>s2</rightStreamName>
+                <leftWindow name="time_slide">
+                    <length>100</length>
+                </leftWindow>
+                <rightWindow name="length_slide">
+                    <length>100</length>
+                </rightWindow>
+                <joinType>INNER_JOIN</joinType>
+                <joinExpression>s1.a=s2.a</joinExpression>
+                <filterAfterJoinExpression>a&gt; 0 and a&lt;100</filterAfterJoinExpression>
+            </Join>
+            <Union id="union" parallel="1"/>
+            <Filter id="filter" parallel="1">
+                <outputExpression>a,b,c</outputExpression>
+                <filterExpression>a&gt; 0 and a&lt;100</filterExpression>
+            </Filter>
+            <Aggregate id="agg" parallel="1">
+                <outputExpression>a,sum(b),count(b)</outputExpression>
+                <window name="time_batch">
+                    <length>100</length>
+                </window>
+                <filterBeforeAggregate>a&gt;1</filterBeforeAggregate>
+                <filterAfterAggregate>b&gt;10</filterAfterAggregate>
+                <groupbyExpression>c</groupbyExpression>
+                <orderby>c,a desc</orderby>
+                <limit>10</limit>
+            </Aggregate>
+            <Functor id="functor" parallel="1">
+                <outputExpression>a,tostring(b)</outputExpression>
+                <filterExpression>a&gt;1 and b&lt;100</filterExpression>
+            </Functor>
+            <KafkaOutput id="kafkaWriter" parallel="1">
+                <serializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>,</serde.simpleserde.separator>
+                </serializer>
+                <topic>innerjoin_out</topic>
+                <zookeepers>158.1.130.21:2181</zookeepers>
+                <zkSessionTimeout>20000</zkSessionTimeout>
+                <zkSyncTime>20000</zkSyncTime>
+            </KafkaOutput>
+            <RandomGenInput id="randomgen" parallel="2">
+                <deserializer class="NullDeserializer"/>
+                <timeUnit>SECONDS</timeUnit>
+                <period>1</period>
+                <eventNumPerPeriod>1000</eventNumPerPeriod>
+                <isSchedue>true</isSchedue>
+                <totalNumber>0</totalNumber>
+                <delayTime>10</delayTime>
+            </RandomGenInput>
+        </Operators>
+        <UserDefineds>
+            <userFiles>
+                <string>d:\conf.xml,e:\abc.jar</string>
+            </userFiles>
+            <appConfs>
+                <property key="app.args.1" value="true"/>
+            </appConfs>
+            <UDFs>
+                <UDF>
+                    <id>udf1</id>
+                    <name>tochar</name>
+                    <clazz>com.huawei.streaming.udf.ToChar</clazz>
+                    <properties>
+                        <property key="udf.init.lazy" value="true"/>
+                    </properties>
+                </UDF>
+            </UDFs>
+            <UDWFs>
+                <UDWF>
+                    <id>udw1</id>
+                    <name>UserKeepall</name>
+                    <clazz>com.huawei.udf.userdefinedwindow.TestWindow</clazz>
+                    <properties>
+                        <property key="udw.length" value="5"/>
+                    </properties>
+                </UDWF>
+            </UDWFs>
+        </UserDefineds>
+        <Transitions>
+            <Transition id="s1" name="s1" from="kafkaReader_left" to="join" distributedType="FIELDS"
+                        distributedFields="a" schemaName="testschema1"/>
+            <Transition id="s2" name="s2" from="kafkaReader_right" to="join" distributedType="FIELDS"
+                        distributedFields="a" schemaName="testschema1"/>
+            <Transition id="s3" name="s3" from="kafkaReader_union" to="union" distributedType="FIELDS"
+                        distributedFields="a" schemaName="testschema2"/>
+            <Transition id="s4" name="s4" from="join" to="union" distributedType="FIELDS" distributedFields="a"
+                        schemaName="testschema2"/>
+            <Transition id="s5" name="s5" from="union" to="filter" distributedType="SHUFFLE" schemaName="testschema2"/>
+            <Transition id="s6" name="s6" from="filter" to="agg" distributedType="FIELDS" distributedFields="a"
+                        schemaName="testschema2"/>
+            <Transition id="s7" name="s7" from="agg" to="functor" distributedType="SHUFFLE" schemaName="testschema2"/>
+            <Transition id="s8" name="s8" from="functor" to="kafkaWriter" distributedType="SHUFFLE"
+                        schemaName="testschema2"/>
+        </Transitions>
+    </Application>
+</Definitions>

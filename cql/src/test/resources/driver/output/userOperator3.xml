@@ -1,0 +1,61 @@
+<Definitions>
+  <Application id="tt">
+    <Schemas>
+      <Schema id="s" name="s">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="id" type="java.lang.String"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+        <attribute name="cc" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="s1" name="s1">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="cc" type="java.lang.Long"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>agg_1_1</topic>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>agg_2</topic>
+      </KafkaOutput>
+      <Aggregator id="Aggregator_005" parallel="1">
+        <outputExpression>s.id, s.name,  count( s.id ) </outputExpression>
+        <groupbyExpression>s.id</groupbyExpression>
+        <window name="time_batch">
+          <length>20000</length>
+          <excludeNow>false</excludeNow>
+        </window>
+        <filterBeforeAggregate>(s.id &gt; 5)</filterBeforeAggregate>
+      </Aggregator>
+      <FunctionStream id="userop_006" parallel="2">
+        <properties/>
+        <operatorClass>com.huawei.UserOperator</operatorClass>
+        <inputSchema id="s1" name="s1">
+          <attribute name="id" type="java.lang.String"/>
+          <attribute name="name" type="java.lang.String"/>
+          <attribute name="cc" type="java.lang.Integer"/>
+        </inputSchema>
+        <outputSchema id="rs" name="rs">
+          <attribute name="id" type="java.lang.String"/>
+          <attribute name="name" type="java.lang.String"/>
+          <attribute name="type" type="java.lang.Integer"/>
+          <attribute name="cc" type="java.lang.Integer"/>
+        </outputSchema>
+      </FunctionStream>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Aggregator_005" distributedType="FIELDS" distributedFields="s.id" schemaName="s"/>
+      <Transition name="st_002" from="Aggregator_005" to="userop_006" distributedType="SHUFFLE" schemaName="s1"/>
+      <Transition name="st_006" from="userop_006" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

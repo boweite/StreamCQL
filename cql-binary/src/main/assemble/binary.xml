@@ -1,0 +1,60 @@
+<assembly
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>bin</id>
+    <formats>
+        <format>dir</format>
+    </formats>
+
+    <fileSets>
+        <fileSet>
+            <directory>../bin/</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <directoryMode>0700</directoryMode>
+            <lineEnding>unix</lineEnding>
+            <excludes>
+                <exclude>cql.bat</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/</directory>
+            <outputDirectory>conf</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>0700</directoryMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>target/</directory>
+            <outputDirectory>lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>0700</directoryMode>
+            <includes>
+                <include>cql-1.0.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../adapter/storm/target/</directory>
+            <outputDirectory>./</outputDirectory>
+            <includes>
+                <include>stream-storm-*-with-dependencies.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>lib/</outputDirectory>
+            <directoryMode>0700</directoryMode>
+            <fileMode>0644</fileMode>
+            <!--同时排除相关依赖 -->
+            <useTransitiveFiltering>true</useTransitiveFiltering>
+            <excludes>
+                <exclude>junit:junit</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+</assembly>

@@ -1,0 +1,61 @@
+<Definitions>
+  <Application id="simple">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+    </confs>
+    <Schemas>
+      <Schema id="s" name="s">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="id" type="java.lang.String"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+        <attribute name="cc" type="java.lang.Integer"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe">
+          <separator>,</separator>
+        </deserializer>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>agg_1_1</topic>
+        <zookeepers>localhost:2181,158.1.130.21:2181</zookeepers>
+        <zkSessionTimeout>20000</zkSessionTimeout>
+        <zkSyncTime>20000</zkSyncTime>
+        <messageSerializerClass>kafka.serializer.StringEncoder</messageSerializerClass>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe">
+          <separator>,</separator>
+        </serializer>
+        <topic>agg_1_2</topic>
+        <zookeepers>158.1.130.12:2181</zookeepers>
+        <zkSessionTimeout>20000</zkSessionTimeout>
+        <zkSyncTime>20000</zkSyncTime>
+        <messageSerializerClass>kafka.serializer.StringEncoder</messageSerializerClass>
+      </KafkaOutput>
+      <Filter id="Filter_003" parallel="1">
+        <outputExpression>s.id,s.name,s.type</outputExpression>
+        <filterExpression>(s.id &gt; 2)</filterExpression>
+      </Filter>
+      <Aggregator id="Aggregator_004" parallel="1">
+        <outputExpression>s.id, s.name, s.type,  count( s.id ) </outputExpression>
+        <groupbyExpression>s.type</groupbyExpression>
+        <window name="time_batch">
+          <length>20000</length>
+          <excludeNow>false</excludeNow>
+        </window>
+        <filterBeforeAggregate>(s.id &gt; 5)</filterBeforeAggregate>
+      </Aggregator>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="Filter_003" to="Aggregator_004" distributedType="FIELDS" distributedFields="s.type" schemaName="s"/>
+      <Transition name="st_002" from="KafkaInput_001" to="Filter_003" distributedType="SHUFFLE" schemaName="s"/>
+      <Transition name="st_003" from="Aggregator_004" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

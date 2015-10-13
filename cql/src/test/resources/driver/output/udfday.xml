@@ -1,0 +1,41 @@
+<Definitions>
+  <Application id="tt">
+    <Schemas>
+      <Schema id="s1" name="s1">
+        <attribute name="c1" type="java.lang.String"/>
+      </Schema>
+      <Schema id="s2" name="s2">
+        <attribute name="c1" type="java.lang.Integer"/>
+        <attribute name="c2" type="java.lang.Integer"/>
+        <attribute name="c3" type="java.lang.Integer"/>
+        <attribute name="c4" type="java.lang.Integer"/>
+        <attribute name="c5" type="java.lang.Integer"/>
+        <attribute name="c6" type="java.lang.Integer"/>
+        <attribute name="c7" type="java.lang.Integer"/>
+        <attribute name="c8" type="java.lang.Integer"/>
+        <attribute name="c9" type="java.lang.String"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>zhou123</groupId>
+        <topic>Previous_input_0070_0001</topic>
+        <zookeepers>127.0.0.1:2181</zookeepers>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>Previous_output_0070_0001</topic>
+        <zookeepers>127.0.0.1:2181</zookeepers>
+        <brokers>127.0.0.1:9092</brokers>
+      </KafkaOutput>
+      <Functor id="Functor_004" parallel="1">
+        <outputExpression> year( s1.c1 ) ,  month( s1.c1 ) ,  day( s1.c1 ) ,  dayofmonth( s1.c1 ) ,  hour( s1.c1 ) ,  minute( s1.c1 ) ,  second( s1.c1 ) ,  weekofyear( s1.c1 ) ,  todate( s1.c1 ) </outputExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_004" distributedType="SHUFFLE" schemaName="s1"/>
+      <Transition name="st_003" from="Functor_004" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="s2"/>
+    </Transitions>
+  </Application>
+</Definitions>

@@ -1,0 +1,8 @@
+##sqlstart:
+select * from testStreamS1 join S2 on
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near 'on' at line 1:37.
+##sqlstart:
+select * from testStream  as S1 join S2 on S1.id=
+##sqlend
+ERROR CQL-04000: You have an error in your CQL syntax; check the manual that corresponds to your Streaming version for the right syntax to use near '=' at line 1:49.

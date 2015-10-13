@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Definitions>
+    <Application id="in">
+        <Schemas>
+            <Schema id="testSchema1">
+                <attribute name="a" type="java.lang.String"/>
+                <attribute name="b" type="java.lang.Integer"/>
+                <attribute name="c" type="java.lang.Integer"/>
+            </Schema>
+            <Schema id="testSchema2">
+                <attribute name="a" type="java.lang.String"/>
+                <attribute name="b" type="java.lang.Integer"/>
+                <attribute name="c" type="java.lang.Integer"/>
+            </Schema>
+        </Schemas>
+        <Operators>
+            <!-- 数据读取算子 -->
+            <KafkaInput id="kafkareader" parallel="1">
+                <groupId>groupId</groupId>
+                <topic>simpletopic_in</topic>
+                <zookeepers>158.1.130.21:2181</zookeepers>
+                <zkSessionTimeout>20000</zkSessionTimeout>
+                <zkSyncTime>20000</zkSyncTime>
+                <messageSerializerClass>kafka.serializer.StringEncoder
+                </messageSerializerClass>
+                <deserializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>,</serde.simpleserde.separator>
+                </deserializer>
+            </KafkaInput>
+
+            <!-- 数据过滤算子 -->
+            <Filter id="filter" parallel="1">
+                <outputExpression>
+                    <![CDATA[
+					a,b,c
+					]]>
+                </outputExpression>
+                <filterExpression>
+                    <![CDATA[
+				a in ('1','2','3')
+				]]>
+                </filterExpression>
+            </Filter>
+
+            <!-- 数据写入算子 -->
+            <KafkaOutput id="kafkawriter" parallel="1">
+                <topic>simpletopic_out</topic>
+                <zookeepers>158.1.130.21:2181</zookeepers>
+                <zkSessionTimeout>20000</zkSessionTimeout>
+                <zkSyncTime>20000</zkSyncTime>
+                <messageSerializerClass>kafka.serializer.StringEncoder
+                </messageSerializerClass>
+                <serializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>|</serde.simpleserde.separator>
+                </serializer>
+            </KafkaOutput>
+        </Operators>
+
+        <Transitions>
+            <Transition name="stream1" from="kafkareader" to="filter">
+                <distributedType>SHUFFLE</distributedType>
+                <schemaName>testSchema1</schemaName>
+            </Transition>
+            <Transition name="stream2" from="filter" to="kafkawriter">
+                <distributedType>SHUFFLE</distributedType>
+                <schemaName>testSchema2</schemaName>
+            </Transition>
+        </Transitions>
+    </Application>
+</Definitions>

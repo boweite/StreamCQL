@@ -1,0 +1,42 @@
+<Definitions>
+  <Application id="Previous1">
+    <confs>
+      <property key="operator.kafka.brokers" value="127.0.0.1:9092"/>
+      <property key="operator.kafka.zookeepers" value="158.1.130.10:24002"/>
+      <property key="serde.simpleserde.separator" value=","/>
+    </confs>
+    <Schemas>
+      <Schema id="input_case_when" name="input_case_when">
+        <attribute name="id" type="java.math.BigDecimal"/>
+      </Schema>
+      <Schema id="output_case_when" name="output_case_when">
+        <attribute name="id" type="java.math.BigDecimal"/>
+        <attribute name="suma" type="java.math.BigDecimal"/>
+        <attribute name="sumf" type="java.math.BigDecimal"/>
+        <attribute name="avga" type="java.math.BigDecimal"/>
+        <attribute name="avgf" type="java.math.BigDecimal"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>Gidkpi_1_1</groupId>
+        <topic>Case_When_In</topic>
+      </KafkaInput>
+      <ConsoleOutput id="ConsoleOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+      </ConsoleOutput>
+      <Aggregator id="Aggregator_004" parallel="1">
+        <outputExpression>input_case_when.id,  sum( input_case_when.id ) ,  sum( input_case_when.id ,(input_case_when.id &gt; 10) ) ,  avg( input_case_when.id ) ,  avg( input_case_when.id ,(input_case_when.id &gt; 10) ) </outputExpression>
+        <groupbyExpression>input_case_when.id</groupbyExpression>
+        <window name="keepall">
+          <excludeNow>false</excludeNow>
+        </window>
+      </Aggregator>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Aggregator_004" distributedType="FIELDS" distributedFields="input_case_when.id" schemaName="input_case_when"/>
+      <Transition name="st_003" from="Aggregator_004" to="ConsoleOutput_002" distributedType="SHUFFLE" schemaName="output_case_when"/>
+    </Transitions>
+  </Application>
+</Definitions>

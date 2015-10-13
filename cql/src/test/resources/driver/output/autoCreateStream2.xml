@@ -1,0 +1,54 @@
+<Definitions>
+  <Application id="jointest">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+      <property key="operator.kafka.messageserializerclass" value="kafka.serializer.StringEncoder"/>
+      <property key="operator.kafka.zksessiontimeout" value="20000"/>
+      <property key="operator.kafka.zksynctime" value="20000"/>
+      <property key="operator.kafka.zookeepers" value="158.1.130.12:2181"/>
+      <property key="serde.simpleserde.separator" value=","/>
+    </confs>
+    <Schemas>
+      <Schema id="s1" name="s1">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+        <attribute name="c" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="s3" name="s3">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+        <attribute name="cc" type="java.lang.Integer"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>chineline_1_1</groupId>
+        <topic>join_1</topic>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>chineline_1_4</topic>
+      </KafkaOutput>
+      <Functor id="Functor_005" parallel="1">
+        <outputExpression>s1.id, s1.name, s1.type, 1</outputExpression>
+      </Functor>
+      <Functor id="Functor_007" parallel="1">
+        <outputExpression>s3.id, s3.name, s3.type, s3.cc</outputExpression>
+        <filterExpression>(s3.id &gt; 10)</filterExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_005" distributedType="SHUFFLE" schemaName="s1"/>
+      <Transition name="st_002" from="Functor_005" to="Functor_007" distributedType="SHUFFLE" schemaName="s3"/>
+      <Transition name="st_006" from="Functor_007" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

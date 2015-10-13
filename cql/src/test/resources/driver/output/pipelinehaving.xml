@@ -1,0 +1,50 @@
+<Definitions>
+  <Application id="STRV1R2_CQL_FUN_FUNC_0040_0002">
+    <Schemas>
+      <Schema id="s1" name="s1">
+        <attribute name="column1" type="java.lang.String"/>
+        <attribute name="column2" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="s2" name="s2">
+        <attribute name="column1" type="java.lang.String"/>
+        <attribute name="column2" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="s3" name="s3">
+        <attribute name="c1" type="java.lang.String"/>
+        <attribute name="c2" type="java.lang.Integer"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>zhou123</groupId>
+        <topic>Previous_input_0040_0002</topic>
+        <zookeepers>160.165.0.10:2181</zookeepers>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>Previous_output_0040_0002</topic>
+        <zookeepers>160.165.0.10:2181</zookeepers>
+        <brokers>160.138.1.22:9092</brokers>
+      </KafkaOutput>
+      <Aggregator id="Aggregator_005" parallel="1">
+        <outputExpression>s1.column1,  sum( s1.column2 ) </outputExpression>
+        <filterAfterAggregate>(s3.c2 &lt; 2000)</filterAfterAggregate>
+        <groupbyExpression>s1.column1</groupbyExpression>
+        <window name="length_batch">
+          <length>6</length>
+          <excludeNow>false</excludeNow>
+        </window>
+      </Aggregator>
+      <Functor id="Functor_007" parallel="1">
+        <outputExpression>s3.c1, s3.c2</outputExpression>
+        <filterExpression>s3.c2 is not null</filterExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Aggregator_005" distributedType="FIELDS" distributedFields="s1.column1" schemaName="s1"/>
+      <Transition name="st_002" from="Aggregator_005" to="Functor_007" distributedType="SHUFFLE" schemaName="s3"/>
+      <Transition name="st_006" from="Functor_007" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="s2"/>
+    </Transitions>
+  </Application>
+</Definitions>

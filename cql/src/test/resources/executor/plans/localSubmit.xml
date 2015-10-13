@@ -1,0 +1,49 @@
+<Definitions>
+    <Application id="simple">
+        <Schemas>
+            <Schema id="s">
+                <attribute name="id" type="java.lang.Integer"/>
+                <attribute name="name" type="java.lang.String"/>
+                <attribute name="type" type="java.lang.Integer"/>
+            </Schema>
+            <Schema id="rs">
+                <attribute name="id" type="java.lang.String"/>
+                <attribute name="name" type="java.lang.String"/>
+                <attribute name="cc" type="java.lang.Integer"/>
+            </Schema>
+        </Schemas>
+        <Operators>
+            <RandomSource id="op_001" parallel="1">
+                <deserializer class="NullDeserializer"/>
+                <timeUnit>SECONDS</timeUnit>
+                <period>1</period>
+                <eventNumPerPeriod>1</eventNumPerPeriod>
+                <isSchedule>true</isSchedule>
+                <totalNumber>20</totalNumber>
+                <delayTime>0</delayTime>
+            </RandomSource>
+            <ConsoleWriter id="op_002" parallel="1">
+                <serializer class="SimpleSerDe">
+                    <serde.simpleserde.separator>,</serde.simpleserde.separator>
+                </serializer>
+                <isPrintCount>false</isPrintCount>
+            </ConsoleWriter>
+            <Aggregate id="op_003" parallel="1">
+                <outputExpression>s.id,s.name, count( s.id )</outputExpression>
+                <window name="time_batch">
+                    <length>200</length>
+                </window>
+                <filterBeforeAggregate>(s.id &gt; 5)</filterBeforeAggregate>
+                <groupbyExpression>s.type</groupbyExpression>
+            </Aggregate>
+        </Operators>
+        <UserDefineds>
+            <appConfs/>
+        </UserDefineds>
+        <Transitions>
+            <Transition name="st_001" from="op_001" to="op_003" distributedType="FIELDS" distributedFields="s.type"
+                        schemaName="s"/>
+            <Transition name="st_003" from="op_003" to="op_002" distributedType="SHUFFLE" schemaName="rs"/>
+        </Transitions>
+    </Application>
+</Definitions>

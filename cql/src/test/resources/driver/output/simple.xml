@@ -1,0 +1,48 @@
+<Definitions>
+  <Application id="simple">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+    </confs>
+    <Schemas>
+      <Schema id="s" name="s">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="id" type="java.lang.String"/>
+        <attribute name="name" type="java.lang.String"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe">
+          <separator>,</separator>
+        </deserializer>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>simple_1</topic>
+        <zookeepers>localhost:2181,158.1.130.21:2181</zookeepers>
+        <zkSessionTimeout>20000</zkSessionTimeout>
+        <zkSyncTime>20000</zkSyncTime>
+        <messageSerializerClass>kafka.serializer.StringEncoder</messageSerializerClass>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe">
+          <separator>,</separator>
+        </serializer>
+        <topic>simple_2</topic>
+        <zookeepers>158.1.130.12:2181</zookeepers>
+        <zkSessionTimeout>20000</zkSessionTimeout>
+        <zkSyncTime>20000</zkSyncTime>
+        <messageSerializerClass>kafka.serializer.StringEncoder</messageSerializerClass>
+      </KafkaOutput>
+      <Functor id="Functor_004" parallel="1">
+        <outputExpression>s.id, s.name</outputExpression>
+        <filterExpression>(s.id &gt; 5)</filterExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_004" distributedType="SHUFFLE" schemaName="s"/>
+      <Transition name="st_003" from="Functor_004" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

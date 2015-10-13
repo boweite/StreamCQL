@@ -1,0 +1,40 @@
+<Definitions>
+  <Application id="STRV1R2_CQL_BASIC_FUNC_0050_0023">
+    <Schemas>
+      <Schema id="s1" name="s1">
+        <attribute name="ci" type="java.lang.Integer"/>
+        <attribute name="cl" type="java.lang.Long"/>
+        <attribute name="cf" type="java.lang.Float"/>
+        <attribute name="cd" type="java.lang.Double"/>
+        <attribute name="cde" type="java.math.BigDecimal"/>
+      </Schema>
+      <Schema id="s2" name="s2">
+        <attribute name="cl1" type="java.lang.Long"/>
+        <attribute name="cf1" type="java.lang.Float"/>
+        <attribute name="cd1" type="java.lang.Double"/>
+        <attribute name="cde1" type="java.math.BigDecimal"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>zhou123</groupId>
+        <topic>demo_sin</topic>
+        <zookeepers>51.196.22.36:24002</zookeepers>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>demo_sout</topic>
+        <zookeepers>51.196.22.36:24002</zookeepers>
+        <brokers>51.196.22.36:9092</brokers>
+      </KafkaOutput>
+      <Functor id="Functor_004" parallel="1">
+        <outputExpression>(s1.ci * s1.cl), ((s1.ci * s1.cl) * s1.cf), (((s1.ci * s1.cl) * s1.cf) * s1.cd), ((((s1.ci * s1.cl) * s1.cf) * s1.cd) * s1.cde)</outputExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_004" distributedType="SHUFFLE" schemaName="s1"/>
+      <Transition name="st_003" from="Functor_004" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="s2"/>
+    </Transitions>
+  </Application>
+</Definitions>

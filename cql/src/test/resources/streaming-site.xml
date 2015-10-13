@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property>
+        <name>streaming.storm.submit.islocal</name>
+        <value>false</value>
+        <description></description>
+    </property>
+    <property>
+        <name>streaming.common.istestmodel</name>
+        <value>true</value>
+        <description></description>
+    </property>
+    <property>
+        <name>streaming.killapplication.overtime</name>
+        <value>30</value>
+        <description></description>
+    </property>
+    <!-- Storm 相关配置-->
+    <property>
+        <name>streaming.localtask.alivetime.ms</name>
+        <value>5000</value>
+        <description></description>
+    </property>
+    <property>
+        <name>streaming.storm.nimbus.host</name>
+        <value>127.0.0.1</value>
+        <description></description>
+    </property>
+    <property>
+        <name>streaming.storm.nimbus.port</name>
+        <value>6627</value>
+        <description></description>
+    </property>
+    <property>
+        <name>streaming.storm.thrift.transport.plugin</name>
+        <value>backtype.storm.security.auth.SimpleTransportPlugin</value>
+        <description></description>
+    </property>
+    <property>
+        <name>streaming.storm.killtask.waitseconds</name>
+        <value>3</value>
+        <description></description>
+    </property>
+
+    <property>
+        <name>streaming.storm.ha.zkaddress</name>
+        <value>127.0.0.1</value>
+        <description></description>
+    </property>
+
+    <property>
+        <name>streaming.storm.ha.zkport</name>
+        <value>2181</value>
+        <description></description>
+    </property>
+
+    <property>
+        <name>streaming.storm.ha.zksessiontimeout</name>
+        <value>30000</value>
+        <description></description>
+    </property>
+
+    <property>
+        <name>streaming.storm.ha.zkconnectiontimeout</name>
+        <value>30000</value>
+        <description></description>
+    </property>
+
+
+    <property>
+        <name>streaming.serde.default</name>
+        <value>com.huawei.streaming.serde.SimpleSerDe</value>
+        <description></description>
+    </property>
+
+    <!--默认序列化配置-->
+    <property>
+        <name>serde.simpleserde.separator</name>
+        <value>,</value>
+        <description></description>
+    </property>
+    <!-- KAFKA 相关配置-->
+    <property>
+        <name>operator.kafka.messageserializerclass</name>
+        <value>kafka.serializer.StringEncoder</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.kafka.zookeepers</name>
+        <value>158.1.130.12:2181</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.kafka.brokers</name>
+        <value>158.1.130.12:9092</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.kafka.zksessiontimeout</name>
+        <value>20000</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.kafka.zksynctime</name>
+        <value>20000</value>
+        <description></description>
+    </property>
+    <!-- MQ 相关配置-->
+    <property>
+        <name>operator.mq.serviceip</name>
+        <value>158.1.130.80</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.mq.serviceport</name>
+        <value>22136</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.mq.queuetype</name>
+        <value>0</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.mq.lifetime</name>
+        <value>0</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.mq.deletetime</name>
+        <value>30000</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.mq.loop.num</name>
+        <value>0</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.mq.isprint.message</name>
+        <value>false</value>
+        <description></description>
+    </property>
+    <property>
+        <name>operator.mq.channel.count</name>
+        <value>1</value>
+        <description></description>
+    </property>
+    <!-- HBase 相关配置-->
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>158.1.130.21:24000,158.1.130.22:24000,158.1.130.23:24000</value>
+        <description></description>
+    </property>
+    <property>
+        <name>hbase.zookeeper.property.clientPort</name>
+        <value>24000</value>
+        <description></description>
+    </property>
+
+    <property>
+        <name>streaming.template.directory</name>
+        <value>${system:java.io.tmpdir}</value>
+        <description></description>
+    </property>
+</configuration>

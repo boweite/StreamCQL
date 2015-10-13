@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Definitions>
+    <Application id="id01" name="testapp">
+        <Schemas>
+            <Schema id="s01" name="s01">
+                <attribute name="c1" type="java.lang.String"/>
+                <attribute name="c2" type="java.lang.Integer"/>
+            </Schema>
+            <Schema id="s02" name="s02">
+                <attribute name="c3" type="java.lang.String"/>
+                <attribute name="c4" type="java.lang.Integer"/>
+            </Schema>
+        </Schemas>
+        <Operators>
+            <KafkaReader id="id1" parallel="1">
+                <properties>
+                    <property key="zookeeper.port" value="2180"/>
+                    <property key="zookeeper.ip.address" value="localhost"/>
+                </properties>
+                <deserializer class="SimpleSerDe">
+                    <separator>|</separator>
+                </deserializer>
+                <groupId>g1</groupId>
+                <zookeepers>localhost:2181</zookeepers>
+            </KafkaReader>
+            <KafkaReader id="id2" parallel="1">
+                <properties>
+                    <property key="zookeeper.port" value="2180"/>
+                    <property key="zookeeper.ip.address" value="localhost"/>
+                </properties>
+                <deserializer class="SimpleSerDe">
+                    <separator>|</separator>
+                </deserializer>
+                <groupId>g1</groupId>
+                <zookeepers>localhost:2181</zookeepers>
+            </KafkaReader>
+            <Filter id="id3" parallel="1">
+                <properties>
+                    <property key="filter.optimizer" value="com.huawei.optimizer.filter"/>
+                </properties>
+                <filterExpression>(a&lt;=1) or (a&gt;10) and b is not null and c in (&apos;1&apos;,&apos;2&apos;,&apos;3&apos;)</filterExpression>
+            </Filter>
+            <Join id="id5" parallel="1">
+                <properties>
+                    <property key="join.type" value="hashjoini"/>
+                </properties>
+                <outputExpression>udf(c1),to_String(c4)</outputExpression>
+                <leftStreamName>s3</leftStreamName>
+                <rightStreamName>s4</rightStreamName>
+                <leftWindow name="keepall">
+                    <excludeNow>false</excludeNow>
+                </leftWindow>
+                <rightWindow name="time_slide">
+                    <length>100</length>
+                    <excludeNow>false</excludeNow>
+                </rightWindow>
+                <joinType>INNER_JOIN</joinType>
+                <joinExpression>name3.c1 = name4.c1 and name3.c2 = name4.c4+2</joinExpression>
+                <filterAfterJoinExpression>name4.c1&lt;10</filterAfterJoinExpression>
+                <uniDirectionIndex>NONE_STREAM</uniDirectionIndex>
+            </Join>
+            <Filter id="id6" parallel="1">
+                <properties>
+                    <property key="filter.before.window" value="true"/>
+                </properties>
+                <filterExpression>c3&lt;=1</filterExpression>
+            </Filter>
+            <Sort id="id7" parallel="1">
+                <window name="length_batch">
+                    <length>100</length>
+                    <excludeNow>false</excludeNow>
+                </window>
+                <orderBy>c3 desc, c4 asc</orderBy>
+                <limit>10</limit>
+            </Sort>
+            <TCPWriter id="id8" parallel="1">
+                <properties>
+                    <property key="split" value="|"/>
+                </properties>
+                <serializer class="SimpleSerDe">
+                    <separator>,</separator>
+                </serializer>
+                <server>localhost</server>
+                <port>10000</port>
+            </TCPWriter>
+        </Operators>
+        <UserDefineds>
+            <userFiles>
+                <string>d:\conf.xml,e:\abc.jar</string>
+            </userFiles>
+            <appConfs>
+                <property key="app.args.1" value="true"/>
+            </appConfs>
+            <UDFs>
+                <UDF>
+                    <id>udf1</id>
+                    <name>tochar</name>
+                    <clazz>com.huawei.streaming.udf.ToChar</clazz>
+                    <properties>
+                        <property key="udf.init.lazy" value="true"/>
+                    </properties>
+                </UDF>
+            </UDFs>
+            <UDWFs>
+                <UDWF>
+                    <id>udw1</id>
+                    <name>UserKeepall</name>
+                    <clazz>com.huawei.udf.userdefinedwindow.TestWindow</clazz>
+                    <properties>
+                        <property key="udw.length" value="5"/>
+                    </properties>
+                </UDWF>
+            </UDWFs>
+        </UserDefineds>
+        <Transitions>
+            <Transition name="s1" from="id1" to="id3" distributedType="SHUFFLE" schemaName="s01"/>
+            <Transition name="s2" from="id2" to="id5" distributedType="FIELDS" distributedFields="id,name"
+                        schemaName="s02"/>
+            <Transition name="s3" from="id3" to="id5" distributedType="FIELDS" distributedFields="id,name"
+                        schemaName="s01"/>
+            <Transition name="s4" from="id5" to="id6" distributedType="SHUFFLE" schemaName="s01"/>
+            <Transition name="s5" from="id6" to="id7" distributedType="SHUFFLE" schemaName="s01"/>
+            <Transition name="s5" from="id7" to="id8" distributedType="SHUFFLE" schemaName="s01"/>
+        </Transitions>
+    </Application>
+</Definitions>

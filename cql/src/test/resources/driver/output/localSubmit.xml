@@ -1,0 +1,48 @@
+<Definitions>
+  <Application id="simple">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+    </confs>
+    <Schemas>
+      <Schema id="s" name="s">
+        <attribute name="id" type="java.lang.Integer"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.Integer"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="id" type="java.lang.String"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="cc" type="java.lang.Integer"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <RandomGenInput id="RandomGen_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <timeUnit>SECONDS</timeUnit>
+        <period>1</period>
+        <eventNumPerPeriod>1</eventNumPerPeriod>
+        <isSchedule>true</isSchedule>
+        <totalNumber>20000</totalNumber>
+        <delayTime>0</delayTime>
+      </RandomGenInput>
+      <ConsoleOutput id="ConsoleOutput_002" parallel="1">
+        <serializer class="SimpleSerDe">
+          <separator>,</separator>
+        </serializer>
+      </ConsoleOutput>
+      <Aggregator id="Aggregator_004" parallel="1">
+        <outputExpression>s.id, s.name,  count( s.id ) </outputExpression>
+        <groupbyExpression>s.type</groupbyExpression>
+        <window name="time_batch">
+          <length>200</length>
+          <excludeNow>false</excludeNow>
+        </window>
+        <filterBeforeAggregate>(s.id &gt; 5)</filterBeforeAggregate>
+      </Aggregator>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="RandomGen_001" to="Aggregator_004" distributedType="FIELDS" distributedFields="s.type" schemaName="s"/>
+      <Transition name="st_003" from="Aggregator_004" to="ConsoleOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>

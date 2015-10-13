@@ -1,0 +1,48 @@
+<Definitions>
+  <Application id="simple">
+    <confs>
+      <property key="operator.kafka.brokers" value="158.1.130.12:9092"/>
+      <property key="operator.kafka.messageserializerclass" value="kafka.serializer.StringEncoder"/>
+      <property key="operator.kafka.zksessiontimeout" value="20000"/>
+      <property key="operator.kafka.zksynctime" value="20000"/>
+      <property key="operator.kafka.zookeepers" value="158.1.130.12:2181"/>
+      <property key="serde.simpleserde.separator" value=","/>
+      <property key="streaming.storm.submit.islocal" value="true"/>
+    </confs>
+    <Schemas>
+      <Schema id="s" name="s">
+        <attribute name="d1" type="java.sql.Date"/>
+        <attribute name="t1" type="java.sql.Time"/>
+        <attribute name="ts1" type="java.sql.Timestamp"/>
+      </Schema>
+      <Schema id="rs" name="rs">
+        <attribute name="d1" type="java.sql.Date"/>
+        <attribute name="t1" type="java.sql.Time"/>
+        <attribute name="ts1" type="java.sql.Timestamp"/>
+      </Schema>
+    </Schemas>
+    <Operators>
+      <KafkaInput id="KafkaInput_001" parallel="1">
+        <deserializer class="SimpleSerDe"/>
+        <groupId>gidkpi_1_1</groupId>
+        <topic>agg_1_1</topic>
+      </KafkaInput>
+      <KafkaOutput id="KafkaOutput_002" parallel="1">
+        <serializer class="SimpleSerDe"/>
+        <topic>agg_1_2</topic>
+      </KafkaOutput>
+      <Functor id="Functor_004" parallel="1">
+        <outputExpression>s.d1, s.t1, s.ts1</outputExpression>
+      </Functor>
+      <Functor id="Functor_006" parallel="1">
+        <outputExpression> todate( &apos;2014-03-04&apos; ) ,  totime( &apos;10:50:00&apos; ) ,  totimestamp( &apos;2014-03-04 10:50:00&apos; ) </outputExpression>
+      </Functor>
+    </Operators>
+    <Transitions>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_004" distributedType="SHUFFLE" schemaName="s"/>
+      <Transition name="st_004" from="Functor_004" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+      <Transition name="st_001" from="KafkaInput_001" to="Functor_006" distributedType="SHUFFLE" schemaName="s"/>
+      <Transition name="st_006" from="Functor_006" to="KafkaOutput_002" distributedType="SHUFFLE" schemaName="rs"/>
+    </Transitions>
+  </Application>
+</Definitions>
